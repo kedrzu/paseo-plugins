@@ -1,5 +1,5 @@
 {
-  "name": "@paseo-plugins/hello",
+  "name": "@paseo-plugins/composer-pane-nav",
   "private": true,
   "version": "0.0.0",
   "scripts": {

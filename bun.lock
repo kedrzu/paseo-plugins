@@ -14,8 +14,8 @@
         "zod": "^4.4.3",
       },
     },
-    "plugins/hello": {
-      "name": "@paseo-plugins/hello",
+    "plugins/composer-pane-nav": {
+      "name": "@paseo-plugins/composer-pane-nav",
       "version": "0.0.0",
     },
   },
@@ -126,7 +126,7 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
-    "@paseo-plugins/hello": ["@paseo-plugins/hello@workspace:plugins/hello"],
+    "@paseo-plugins/composer-pane-nav": ["@paseo-plugins/composer-pane-nav@workspace:plugins/composer-pane-nav"],
 
     "@react-native/assets-registry": ["@react-native/assets-registry@0.81.5", "", {}, "sha512-705B6x/5Kxm1RKRvSv0ADYWm5JOnoiQ1ufW7h8uu2E6G9Of/eE6hP/Ivw3U5jI16ERqZxiKQwk34VJbB0niX9w=="],
 
