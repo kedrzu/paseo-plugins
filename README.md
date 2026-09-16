@@ -8,9 +8,9 @@ independently.
 
 ## Plugins
 
-| Plugin                  | ID      | What it does                                                             |
-| ----------------------- | ------- | ------------------------------------------------------------------------ |
-| [hello](plugins/hello/) | `hello` | Starter template — a sidebar surface calling a server RPC over the wire. |
+| Plugin                                          | ID                  | What it does                                                        |
+| ----------------------------------------------- | ------------------- | ------------------------------------------------------------------- |
+| [composer-pane-nav](plugins/composer-pane-nav/) | `composer-pane-nav` | Makes your pane-focus shortcuts work while the composer is focused. |
 
 ## Requirements
 
@@ -36,14 +36,14 @@ Plugins are off until the daemon-wide switch is on: Settings → Plugins, or set
 From this checkout (the path must be on the daemon host):
 
 ```bash
-paseo plugin install /Users/kedrzu/Dev/paseo-plugins/plugins/hello
+paseo plugin install /Users/kedrzu/Dev/paseo-plugins/plugins/composer-pane-nav
 paseo plugin ls
 ```
 
 From GitHub, on any machine running the daemon:
 
 ```bash
-paseo plugin add kedrzu/paseo-plugins:plugins/hello
+paseo plugin add kedrzu/paseo-plugins:plugins/composer-pane-nav
 ```
 
 ## Developing
@@ -52,8 +52,8 @@ There is no watcher. After editing a plugin:
 
 ```bash
 bun run typecheck
-paseo plugin reload hello
-paseo plugin logs hello
+paseo plugin reload composer-pane-nav
+paseo plugin logs composer-pane-nav
 ```
 
 A failed reload stays failed — the previous bundle is not restored, so fix the error and reload
