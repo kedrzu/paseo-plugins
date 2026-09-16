@@ -19,9 +19,17 @@ you put on it.
 It adds **no shortcut of its own**. It reads the pane-focus chords you already configured in
 Paseo and makes them work inside the composer.
 
-On a matching keystroke it blurs the composer and replays the event. The app's own handler then
-resolves the focus scope to `other`, the guard passes, and the pane switches through the normal
-code path.
+On a matching keystroke it does three things, all through the app's own machinery:
+
+1. **Blurs the composer.** The focus scope resolver falls back to `document.activeElement`, so
+   without this the replay below resolves to `message-input` again and hits the same guard.
+2. **Replays the pane-focus chord.** The scope now resolves to `other`, the guard passes, and the
+   pane switches through the normal code path.
+3. **Replays "focus message input"** (`Cmd+L`). Step 1 left the caret nowhere. `focusPane` moves
+   the layout store's `focusedPaneId`, and with it which composer counts as active, but nothing in
+   the app moves DOM focus to follow — so without this step the old composer loses the caret and
+   the new pane never receives it. With no adjacent pane to move to, this just hands focus back to
+   where you started.
 
 ### Only overridden bindings are honoured
 
@@ -49,6 +57,7 @@ the plugin reaches around it and leans on four Paseo internals:
 - the override storage key, `@paseo:keyboard-shortcut-overrides`
 - the four pane-focus binding ids
 - Paseo's chord string grammar, re-implemented in `client/chord.ts`
+- the `message-input-focus-*` binding ids used for step 3
 
 Any of these can change in a Paseo release, which is why `requirements.paseo` is pinned to
 `>=0.8.0 <0.9.0`. When it breaks it fails quiet — the shortcut simply stops working in the

@@ -52,6 +52,12 @@ export interface BrowserWindow {
 
 declare const window: BrowserWindow | undefined;
 declare const console: { warn(...args: unknown[]): void };
+declare const setTimeout: (handler: () => void, timeout: number) => unknown;
+
+/** Runs after React has flushed the render and effects the previous event triggered. */
+export function afterRender(run: () => void): void {
+  setTimeout(run, 0);
+}
 
 /** The host window, or undefined wherever the pieces this plugin needs are missing. */
 export function browserWindow(): BrowserWindow | undefined {

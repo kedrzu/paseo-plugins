@@ -10,7 +10,7 @@
  * appear in a pane-focus binding.
  */
 
-import type { KeyEvent } from "./dom";
+import type { KeyEvent, KeyEventInit } from "./dom";
 
 export interface KeyCombo {
   code: string;
@@ -135,4 +135,26 @@ export function matchesCombo(combo: KeyCombo, event: KeyEvent, isMac: boolean): 
   if (!!combo.alt !== event.altKey) return false;
   if (!!combo.shift !== event.shiftKey) return false;
   return matchesKeyOrCode(combo, event);
+}
+
+/**
+ * Builds the event fields that would fire if the user pressed this combo, so a
+ * combo the plugin never saw can still be replayed at the app.
+ */
+export function comboToEventInit(combo: KeyCombo, isMac: boolean): KeyEventInit {
+  const useMeta = combo.mod ? isMac : combo.meta === true;
+  const useCtrl = combo.mod ? !isMac || combo.ctrl === true : combo.ctrl === true;
+  const shifted = combo.shift === true && combo.shiftedKey !== undefined;
+  return {
+    // Named keys (ArrowLeft, Escape, F1) carry no `key` because their event.key
+    // is the code verbatim.
+    key: shifted ? (combo.shiftedKey as string) : (combo.key ?? combo.code),
+    code: combo.code,
+    metaKey: useMeta,
+    ctrlKey: useCtrl,
+    altKey: combo.alt === true,
+    shiftKey: combo.shift === true,
+    bubbles: true,
+    cancelable: true,
+  };
 }

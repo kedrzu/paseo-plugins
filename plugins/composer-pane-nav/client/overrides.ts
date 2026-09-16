@@ -39,7 +39,26 @@ const PANE_FOCUS_BINDING_IDS: readonly string[] = [
   "workspace-pane-focus-down-cmd-shift-down",
 ];
 
-let cachedCombos: KeyCombo[] | null = null;
+/**
+ * Binding ids for "focus message input" (Cmd+L on mac, Ctrl+L elsewhere),
+ * keyboard-shortcuts.ts:1051-1073. Replaying this after a pane switch is what
+ * puts the caret in the pane you just moved to.
+ *
+ * Unlike pane focus this one does fall back to its default: the plugin only
+ * ever synthesises this chord, never intercepts it, so a collision with text
+ * editing cannot arise.
+ */
+const FOCUS_INPUT_BINDING = {
+  mac: { bindingId: "message-input-focus-cmd-l-mac", defaultCombo: "Cmd+L" },
+  other: { bindingId: "message-input-focus-ctrl-l-non-mac", defaultCombo: "Ctrl+L" },
+} as const;
+
+export interface ResolvedCombos {
+  readonly paneFocus: readonly KeyCombo[];
+  readonly focusInput: KeyCombo | null;
+}
+
+let cached: ResolvedCombos | null = null;
 let cachedAt = 0;
 
 function findStorageKey(storage: BrowserWindow["localStorage"]): string | null {
@@ -71,7 +90,16 @@ function readOverrides(win: BrowserWindow): Record<string, unknown> {
   }
 }
 
-function resolveCombos(win: BrowserWindow): KeyCombo[] {
+function resolveFocusInput(overrides: Record<string, unknown>, isMac: boolean): KeyCombo | null {
+  const binding = isMac ? FOCUS_INPUT_BINDING.mac : FOCUS_INPUT_BINDING.other;
+  const override = overrides[binding.bindingId];
+  // Deliberately unbound by the user: do not resurrect it.
+  if (override === null) return null;
+  const text = typeof override === "string" ? override : binding.defaultCombo;
+  return parseCombo(text);
+}
+
+function resolveCombos(win: BrowserWindow, isMac: boolean): ResolvedCombos {
   const overrides = readOverrides(win);
   const combos: KeyCombo[] = [];
   for (const bindingId of PANE_FOCUS_BINDING_IDS) {
@@ -86,18 +114,18 @@ function resolveCombos(win: BrowserWindow): KeyCombo[] {
     }
     combos.push(combo);
   }
-  return combos;
+  return { paneFocus: combos, focusInput: resolveFocusInput(overrides, isMac) };
 }
 
-export function paneFocusCombos(win: BrowserWindow, now: number): KeyCombo[] {
-  if (cachedCombos !== null && now - cachedAt < CACHE_TTL_MS) return cachedCombos;
-  cachedCombos = resolveCombos(win);
+export function resolvedCombos(win: BrowserWindow, isMac: boolean, now: number): ResolvedCombos {
+  if (cached !== null && now - cachedAt < CACHE_TTL_MS) return cached;
+  cached = resolveCombos(win, isMac);
   cachedAt = now;
-  return cachedCombos;
+  return cached;
 }
 
 /** Drops the cache so a reinstall re-reads storage immediately. */
 export function resetCombosCache(): void {
-  cachedCombos = null;
+  cached = null;
   cachedAt = 0;
 }
