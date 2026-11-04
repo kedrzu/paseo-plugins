@@ -1,19 +1,64 @@
 {
-  "name": "paseo-plugins",
-  "private": true,
-  "version": "0.0.0",
-  "description": "Paseo Plugins — a collection of plugins for Paseo (https://paseo.sh)",
-  "workspaces": ["plugins/*"],
-  "scripts": {
-    "typecheck": "tsc --noEmit"
-  },
-  "devDependencies": {
-    "@getpaseo/plugin": "0.8.0",
-    "@tanstack/react-query": "^5.90.11",
-    "@types/react": "~19.2.0",
-    "react": "19.1.0",
-    "react-native": "0.81.5",
-    "typescript": "^5.9.3",
-    "zod": "^4.4.3"
-  }
+    "name": "paseo-plugins",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Paseo Plugins — a collection of plugins for Paseo (https://paseo.sh)",
+    "workspaces": [
+        "packages/*",
+        "nzyme/packages/*"
+    ],
+    "type": "module",
+    "scripts": {
+        "setup": "zsh setup.sh",
+        "build": "tsgo --build",
+        "typecheck": "bun run build && tsgo -p scripts && nx run-many -t typecheck --exclude='@nzyme/*'",
+        "monorepo": "nzyme monorepo",
+        "localise": "nzyme localise",
+        "codegen": "nx run-many -t codegen,localise,monorepo",
+        "prep": "nx run-many -t prep",
+        "watch": "nx run-many -t watch,watch:localise,watch:monorepo,watch:tsc --parallel=100",
+        "dev": "nx run-many -t dev,watch:localise --exclude='@nzyme/*' --parallel=100",
+        "lint": "oxlint --type-aware --quiet --disable-nested-config --fix . && eslint --fix .",
+        "lint:check": "oxlint --type-aware --quiet --disable-nested-config . && eslint .",
+        "lint:warnings": "oxlint --type-aware --disable-nested-config .",
+        "lint:nzyme": "bun run --cwd nzyme lint:check && bun run --cwd nzyme format:check",
+        "format": "oxfmt --disable-nested-config . > /dev/null",
+        "format:check": "oxfmt --check --disable-nested-config .",
+        "tests": "TZ=UTC bun test --timeout 10000 --pass-with-no-tests --path-ignore-patterns='**/*.spec.ts' --path-ignore-patterns='**/dist/**' ./packages ./scripts",
+        "index": "nzyme index",
+        "clean": "del \"**/dist\" \"**/dist-cjs\" \"**/.output\" \"**/.nuxt\" \"**/.nx\" \"**/.nzyme\" \"**/*.tsbuildinfo\" \"**/storybook-static\" \"**/test-results\" \"**/playwright-report\" \"!**/node_modules/**\"",
+        "clean:npm": "del \"**/node_modules\"",
+        "reinstall": "bun run clean && bun run clean:npm && bun install"
+    },
+    "devDependencies": {
+        "@getpaseo/plugin": "0.8.0",
+        "@nzyme/cli": "workspace:*",
+        "@nzyme/eslint": "workspace:*",
+        "@nzyme/tsconfig": "workspace:*",
+        "@tanstack/react-query": "^5.90.11",
+        "@types/bun": "1.4.4",
+        "@types/node": "^26.6.6",
+        "@types/react": "~19.2.0",
+        "@typescript/native-preview": "^7.0.0-dev.20260707.2",
+        "del-cli": "8.0.1",
+        "eslint": "10.14.0",
+        "eslint-plugin-package-json": "1.13.0",
+        "nx": "^24.0.3",
+        "oxfmt": "0.75.0",
+        "oxlint": "1.90.0",
+        "oxlint-tsgolint": "7.0.2005",
+        "react": "19.1.0",
+        "react-native": "0.81.5",
+        "zod": "^4.4.3"
+    },
+    "overrides": {
+        "@types/bun": "1.4.4"
+    },
+    "packageManager": "bun@1.4.4",
+    "nx": {
+        "includedScripts": []
+    },
+    "patchedDependencies": {
+        "bun-types@1.4.4": "patches/bun-types@1.4.4.patch"
+    }
 }

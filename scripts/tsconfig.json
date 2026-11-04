@@ -1,0 +1,5 @@
+{
+    "extends": "@nzyme/tsconfig/esm.json",
+    "compilerOptions": { "noEmit": true, "composite": false, "incremental": false, "types": ["bun"] },
+    "include": ["."]
+}
