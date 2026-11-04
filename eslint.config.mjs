@@ -1,0 +1,25 @@
+import { markdown, packageJson, vue } from '@nzyme/eslint';
+import { globalIgnores } from 'eslint/config';
+
+// ESLint covers Vue, `package.json` and Markdown; everything else is oxlint's (see `.oxlintrc.json`).
+export default [
+    globalIgnores([
+        '**/dist/**',
+        '**/.output/**',
+        '**/.output-local/**',
+        '**/.nuxt/**',
+        '**/.nuxt-local/**',
+        '**/storybook-static/**',
+        '**/playwright-report/**',
+        '**/*.loc.ts',
+        '**/*.loc.js',
+        // Agent worktrees are full checkouts of this repo; ESLint does not read .gitignore.
+        '.claude/worktrees/**',
+        // The nzyme submodule is linted by its own config (`lint:nzyme`); without this a directory
+        // run would descend into it and pick up `nzyme/eslint.config.mjs`.
+        'nzyme/**',
+    ]),
+    ...markdown(),
+    ...packageJson(),
+    ...vue(),
+];

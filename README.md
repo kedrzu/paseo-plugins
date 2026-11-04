@@ -3,14 +3,14 @@
 My collection of plugins for [Paseo](https://paseo.sh) — the mobile app for monitoring and
 controlling local AI coding agents.
 
-Each plugin lives in its own directory under `plugins/` and is installed into the Paseo daemon
+Each plugin lives in its own directory under `packages/` and is installed into the Paseo daemon
 independently.
 
 ## Plugins
 
-| Plugin                                          | ID                  | What it does                                                        |
-| ----------------------------------------------- | ------------------- | ------------------------------------------------------------------- |
-| [composer-pane-nav](plugins/composer-pane-nav/) | `composer-pane-nav` | Makes your pane-focus shortcuts work while the composer is focused. |
+|Plugin|ID|What it does|
+|-|-|-|
+|[composer-pane-nav](packages/composer-pane-nav/)|`composer-pane-nav`|Makes your pane-focus shortcuts work while the composer is focused.|
 
 ## Requirements
 
@@ -20,7 +20,7 @@ independently.
 ## Setup
 
 ```bash
-bun install
+zsh setup.sh
 bun run typecheck
 ```
 
@@ -36,14 +36,14 @@ Plugins are off until the daemon-wide switch is on: Settings → Plugins, or set
 From this checkout (the path must be on the daemon host):
 
 ```bash
-paseo plugin install /Users/kedrzu/Dev/paseo-plugins/plugins/composer-pane-nav
+paseo plugin install /Users/kedrzu/Dev/paseo-plugins/packages/composer-pane-nav
 paseo plugin ls
 ```
 
 From GitHub, on any machine running the daemon:
 
 ```bash
-paseo plugin add kedrzu/paseo-plugins:plugins/composer-pane-nav
+paseo plugin add kedrzu/paseo-plugins:packages/composer-pane-nav
 ```
 
 ## Developing
@@ -62,19 +62,20 @@ again.
 ## Adding a plugin
 
 ```bash
-paseo plugin init plugins/<name>
+paseo plugin init packages/<name>
 ```
 
-Then trim the generated `plugins/<name>/package.json` down to the workspace form (name, private,
-version, `typecheck` script — shared devDependencies live in the root `package.json`), point its
-`tsconfig.json` at `../../tsconfig.base.json`, and run `bun install` at the root.
+Then trim the generated `packages/<name>/package.json` down to the workspace form (name, private,
+version, `typecheck` script — shared devDependencies live in the root `package.json`), replace its
+`tsconfig.json` with a copy of `packages/composer-pane-nav/tsconfig.esm.json`, and run `zsh setup.sh`
+at the root. `tsconfig.json` is generated from that file.
 
 ### Layout rules
 
 Paseo compiles plugin sources itself and enforces where code may live:
 
 ```text
-plugins/<name>/
+packages/<name>/
   paseo-plugin.json      # id + requirements, nothing else (the schema is strict)
   index.server.ts        # runs in a Node subprocess on the daemon
   index.client.tsx       # runs inside every connected app

@@ -1,0 +1,46 @@
+diff --git a/test.d.ts b/test.d.ts
+index 9192cab69b3ee3bdb1d826c9110baaaf0fba9e00..293b8cacac5f5c702c7e6a207bd34ecb7e5271ed 100644
+--- a/test.d.ts
++++ b/test.d.ts
+@@ -771,6 +771,23 @@ declare module "bun:test" {
+    *   }
+    * }
+    */
++  /**
++   * Matchers reached through `.resolves` / `.rejects`.
++   *
++   * PATCH (nzyme): upstream types these as plain `Matchers`, i.e. returning `void`, which
++   * contradicts Bun's own documentation — it prescribes `await expect(...).rejects.toThrow(...)`.
++   * With the upstream typing, every awaited rejection assertion trips `await-thenable`, so the
++   * choice is between disabling a genuinely useful rule across all test files or dropping the
++   * `await` and diverging from the documented (and Jest/Vitest-portable) form.
++   *
++   * See https://github.com/oven-sh/bun/issues — report upstream and drop this patch once fixed.
++   */
++  export type PromiseMatchers<T = unknown> = {
++    [K in keyof Matchers<T>]: Matchers<T>[K] extends (...args: infer A) => unknown
++      ? (...args: A) => Promise<void>
++      : PromiseMatchers<T>;
++  };
++
+   export interface Matchers<T = unknown> extends MatchersBuiltin<T> {}
+ 
+   /**
+@@ -948,7 +965,7 @@ declare module "bun:test" {
+      * @example
+      * expect(Promise.resolve(1)).resolves.toBe(1);
+      */
+-    resolves: Matchers<Awaited<T>>;
++    resolves: PromiseMatchers<Awaited<T>>;
+ 
+     /**
+      * Expects the value to be a promise that rejects.
+@@ -956,7 +973,7 @@ declare module "bun:test" {
+      * @example
+      * expect(Promise.reject("error")).rejects.toBe("error");
+      */
+-    rejects: Matchers<unknown>;
++    rejects: PromiseMatchers<unknown>;
+ 
+     /**
+      * Assertion which passes.
