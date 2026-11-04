@@ -9,15 +9,19 @@ checkout or a path in this GitHub repository.
 - **Runtime and package manager:** Bun, with Bun workspaces.
 - **Language:** TypeScript, ESM.
 - **Plugin host:** `@getpaseo/plugin`. Paseo provides `react`, `react-native`, `zod` and
-  `@tanstack/react-query` at runtime; they are dev dependencies here for the types.
+  `@tanstack/react-query` at runtime; they are dev dependencies here for the types. The SDK pin is
+  exact; each plugin declares the minimum Paseo version in `paseo-plugin.json`.
 - **Framework packages:** `@nzyme/*`, built from source from the `nzyme/` git submodule. Today they
   supply the tooling (CLI, lint presets, tsconfig); no plugin imports them at runtime.
 - **Build orchestration:** Nx, cache scoped to each worktree.
 
 ## Packages
 
-There are no plugins at the moment. Each new one is a package `@paseo-plugins/<name>` in
-`packages/<name>`.
+- `@paseo-plugins/claude-accounts` (`packages/claude-accounts`) owns switching between saved Claude
+  Code logins: the Keychain item, `oauthAccount` in `~/.claude.json`, the account store and the
+  sidebar and Command Center UI.
+
+Each new plugin is a package `@paseo-plugins/<name>` in `packages/<name>`.
 
 Every plugin follows Paseo's layout rules (`README.md`): only its entries, `paseo-plugin.json` and
 configuration in the root, and code under `client/`, `server/` and `shared/`.
@@ -41,3 +45,8 @@ configuration in the root, and code under `client/`, `server/` and `shared/`.
 - **The Nx guard test does not require a product task over an nzyme package.** No plugin depends on
   nzyme at runtime, so no such task exists. The assertion on those tasks stays and applies when one does.
 - **No `bump-nzyme` workflow.** The pin moves by hand, for simplicity.
+- **A plugin that uses `react-native` on the client and `fetch` on the server needs two TypeScript
+  programs.** `react-native`'s global `AbortSignal` types clash with Node's. `claude-accounts` keeps
+  `client/tsconfig.json` (React and Bun types) beside `tsconfig.esm.json` (server and shared, Node
+  and Bun types), and its `typecheck` runs both. Its `fetch` is the
+  [token owner check](docs/decisions/claude-accounts-token-owner-check.md).

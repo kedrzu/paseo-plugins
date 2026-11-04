@@ -1,0 +1,7 @@
+{
+    "id": "claude-accounts",
+    "description": "Switch between Claude accounts from the Paseo UI",
+    "requirements": {
+        "paseo": ">=0.15.0"
+    }
+}
