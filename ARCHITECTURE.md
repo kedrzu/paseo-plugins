@@ -16,9 +16,8 @@ checkout or a path in this GitHub repository.
 
 ## Packages
 
-|Package|Path|Owns|
-|-|-|-|
-|`@paseo-plugins/composer-pane-nav`|`packages/composer-pane-nav`|Makes pane-focus shortcuts work while the composer is focused. Client only.|
+There are no plugins at the moment. Each new one is a package `@paseo-plugins/<name>` in
+`packages/<name>`.
 
 Every plugin follows Paseo's layout rules (`README.md`): only its entries, `paseo-plugin.json` and
 configuration in the root, and code under `client/`, `server/` and `shared/`.

@@ -6,12 +6,6 @@ controlling local AI coding agents.
 Each plugin lives in its own directory under `packages/` and is installed into the Paseo daemon
 independently.
 
-## Plugins
-
-|Plugin|ID|What it does|
-|-|-|-|
-|[composer-pane-nav](packages/composer-pane-nav/)|`composer-pane-nav`|Makes your pane-focus shortcuts work while the composer is focused.|
-
 ## Requirements
 
 - Paseo 0.8.0 or newer (daemon **and** app — each checks `requirements.paseo` separately)
@@ -36,14 +30,14 @@ Plugins are off until the daemon-wide switch is on: Settings → Plugins, or set
 From this checkout (the path must be on the daemon host):
 
 ```bash
-paseo plugin install /Users/kedrzu/Dev/paseo-plugins/packages/composer-pane-nav
+paseo plugin install /Users/kedrzu/Dev/paseo-plugins/packages/<name>
 paseo plugin ls
 ```
 
 From GitHub, on any machine running the daemon:
 
 ```bash
-paseo plugin add kedrzu/paseo-plugins:packages/composer-pane-nav
+paseo plugin add kedrzu/paseo-plugins:packages/<name>
 ```
 
 ## Developing
@@ -52,8 +46,8 @@ There is no watcher. After editing a plugin:
 
 ```bash
 bun run typecheck
-paseo plugin reload composer-pane-nav
-paseo plugin logs composer-pane-nav
+paseo plugin reload <id>
+paseo plugin logs <id>
 ```
 
 A failed reload stays failed — the previous bundle is not restored, so fix the error and reload
@@ -66,9 +60,29 @@ paseo plugin init packages/<name>
 ```
 
 Then trim the generated `packages/<name>/package.json` down to the workspace form (name, private,
-version, `typecheck` script — shared devDependencies live in the root `package.json`), replace its
-`tsconfig.json` with a copy of `packages/composer-pane-nav/tsconfig.esm.json`, and run `zsh setup.sh`
-at the root. `tsconfig.json` is generated from that file.
+version, `"typecheck": "tsgo --noEmit"` — shared devDependencies live in the root `package.json`),
+replace its `tsconfig.json` with the `tsconfig.esm.json` below, and run `zsh setup.sh` at the root.
+`tsconfig.json` is generated from that file.
+
+```json
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "lib": ["ES2023"],
+        "types": ["react"],
+        "jsx": "react-jsx",
+        "strict": true,
+        "skipLibCheck": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "include": ["**/*.ts", "**/*.tsx"],
+    "exclude": ["node_modules"]
+}
+```
 
 ### Layout rules
 

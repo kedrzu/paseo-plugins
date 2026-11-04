@@ -1,8 +1,0 @@
-{
-    "name": "@paseo-plugins/composer-pane-nav",
-    "version": "0.0.0",
-    "private": true,
-    "scripts": {
-        "typecheck": "tsgo --noEmit"
-    }
-}

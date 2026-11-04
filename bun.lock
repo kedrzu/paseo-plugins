@@ -896,10 +896,6 @@
         "oxfmt": "0.75.0",
       },
     },
-    "packages/composer-pane-nav": {
-      "name": "@paseo-plugins/composer-pane-nav",
-      "version": "0.0.0",
-    },
   },
   "patchedDependencies": {
     "bun-types@1.4.4": "patches/bun-types@1.4.4.patch",
@@ -1853,8 +1849,6 @@
     "@parcel/watcher-win32-arm64": ["@parcel/watcher-win32-arm64@2.6.0", "", { "os": "win32", "cpu": "arm64" }, "sha512-gIZAP23jaHjGWasY/TY6yL7NHFClf0Ga7FN+iINvk+KN94rhm94lYZhFsbYFNcA04/onvGD9kKmiJLJB2HbNwQ=="],
 
     "@parcel/watcher-win32-x64": ["@parcel/watcher-win32-x64@2.6.0", "", { "os": "win32", "cpu": "x64" }, "sha512-cA+/pXV2YkfxlIcXOQ5fSWqAzzPyD78/x5qbK/I0vUkrlYHA8TIz+MXjAbGouguKVSI4bOmkTSJ1/poVSsgt+A=="],
-
-    "@paseo-plugins/composer-pane-nav": ["@paseo-plugins/composer-pane-nav@workspace:packages/composer-pane-nav"],
 
     "@pkgjs/parseargs": ["@pkgjs/parseargs@0.11.0", "", {}, "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="],
 
