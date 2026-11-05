@@ -6,9 +6,14 @@ controlling local AI coding agents.
 Each plugin lives in its own directory under `packages/` and is installed into the Paseo daemon
 independently.
 
+## Plugins
+
+- [claude-accounts](packages/claude-accounts/README.md) — switch between saved Claude Code logins.
+
 ## Requirements
 
-- Paseo 0.8.0 or newer (daemon **and** app — each checks `requirements.paseo` separately)
+- The Paseo version each plugin needs is in its `paseo-plugin.json` (daemon **and** app — each checks
+  `requirements.paseo` separately)
 - [Bun](https://bun.sh) for installing dev dependencies and typechecking
 
 ## Setup
@@ -83,6 +88,10 @@ replace its `tsconfig.json` with the `tsconfig.esm.json` below, and run `zsh set
     "exclude": ["node_modules"]
 }
 ```
+
+`"types": ["react"]` fits a client-only plugin. A plugin with a server entry also needs `"node"`,
+and `"bun"` for tests; see `packages/claude-accounts` for a plugin that splits client and server into
+two programs.
 
 ### Layout rules
 

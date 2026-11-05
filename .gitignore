@@ -38,6 +38,7 @@ tsconfig.cjs.json
 /packages/*/INDEX.md
 # …except the hand-written ones: repo scripts outside every package
 !/scripts/tsconfig.json
+!/packages/claude-accounts/client/tsconfig.json
 
 # Environment and local secrets (templates stay committed)
 .env

@@ -31,7 +31,7 @@
         "reinstall": "bun run clean && bun run clean:npm && bun install"
     },
     "devDependencies": {
-        "@getpaseo/plugin": "0.8.0",
+        "@getpaseo/plugin": "0.15.0",
         "@nzyme/cli": "workspace:*",
         "@nzyme/eslint": "workspace:*",
         "@nzyme/tsconfig": "workspace:*",
