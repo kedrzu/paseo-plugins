@@ -6,6 +6,7 @@ import { Pressable, Text, View } from 'react-native';
 
 import type { AccountActions, AccountActionsState, AccountsStore } from './store';
 import { createAccountActions, getSwitchTarget } from './store';
+import { useHover } from './useHover';
 
 export interface ActionButtonProps extends Pick<PluginHostProps, 'theme'> {
     label: string;
@@ -77,18 +78,23 @@ export function SwitchConfirm({
 
 /** A themed text button; React Native has no styled one. */
 export function ActionButton({ theme, label, primary = false, disabled = false, onPress }: ActionButtonProps) {
+    const { hovered, hoverProps } = useHover();
+    const active = hovered && !disabled;
+    const restingBackground = primary ? theme.colors.accent : theme.colors.surface2;
     return (
         <Pressable
             accessibilityRole="button"
             accessibilityState={{ disabled }}
             disabled={disabled}
             onPress={onPress}
+            {...hoverProps}
             style={{
                 paddingHorizontal: 12,
                 paddingVertical: 6,
                 borderRadius: 6,
-                backgroundColor: primary ? theme.colors.accent : theme.colors.surface2,
-                opacity: disabled ? 0.5 : 1,
+                // The theme has no hover token: a primary dims, the others rise one step to the border colour.
+                backgroundColor: active && !primary ? theme.colors.border : restingBackground,
+                opacity: disabled ? 0.5 : active && primary ? 0.85 : 1,
             }}
         >
             <Text style={{ color: primary ? theme.colors.accentForeground : theme.colors.foreground }}>{label}</Text>

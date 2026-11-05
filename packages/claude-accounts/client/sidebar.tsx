@@ -7,6 +7,7 @@ import { Pressable, Text, View } from 'react-native';
 import type { AccountsStatus, AccountsStore } from './store';
 import { getSidebarLabel } from './store';
 import { ActionButton, SwitchConfirm, useAccountActions } from './switchConfirm';
+import { useHover } from './useHover';
 
 interface AccountRowProps extends Pick<PluginPopoverProps, 'theme'> {
     account: AccountsStatus['accounts'][number];
@@ -37,7 +38,8 @@ export function createAccountsSidebarItem(store: AccountsStore): ComponentType<P
         const { actions, state } = useAccountActions(store);
         const pending = state.step === 'pending';
 
-        return <View style={{ gap: 12, padding: 12, minWidth: 260 }}>{renderContent()}</View>;
+        // The host pads the popover already.
+        return <View style={{ gap: 4, minWidth: 260 }}>{renderContent()}</View>;
 
         function renderContent() {
             if (status === null) {
@@ -101,18 +103,30 @@ export function createAccountsSidebarItem(store: AccountsStore): ComponentType<P
 
 function AccountRow({ theme, account, disabled, onPress }: AccountRowProps) {
     const pressable = !account.active && !account.damaged;
+    const { hovered, hoverProps } = useHover();
     return (
         <Pressable
             accessibilityRole={pressable ? 'button' : undefined}
             accessibilityState={{ disabled: !pressable || disabled, selected: account.active }}
             disabled={!pressable || disabled}
             onPress={onPress}
-            style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}
+            {...hoverProps}
+            style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 8,
+                // Into the host's padding: the text lines up with it and the hover reads as a menu row.
+                marginHorizontal: -8,
+                paddingHorizontal: 8,
+                paddingVertical: 6,
+                borderRadius: 6,
+                backgroundColor: hovered && pressable && !disabled ? theme.colors.surface2 : 'transparent',
+            }}
         >
             <View style={{ flex: 1 }}>
                 <Text style={{ color: theme.colors.foreground }}>{account.email}</Text>
                 {account.organization !== null && (
-                    <Text style={{ color: theme.colors.foregroundMuted }}>{account.organization}</Text>
+                    <Text style={{ color: theme.colors.foregroundMuted, fontSize: 12 }}>{account.organization}</Text>
                 )}
             </View>
             {account.active && (
