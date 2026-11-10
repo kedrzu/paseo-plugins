@@ -1,0 +1,45 @@
+#!/bin/sh
+# Paseo provider command for Claude Code: holds an agent's session until its workspace setup has
+# finished, then execs the real `claude` with the same arguments. See ../README.md.
+set -eu
+
+self_dir=$(cd "$(dirname "$0")" && pwd -P)
+name=$(basename "$0")
+
+# The first executable `$1` on PATH, then in the usual install locations, skipping this directory.
+find_executable() {
+    old_ifs=$IFS
+    IFS=:
+    for dir in $PATH "$HOME/.local/bin" "$HOME/.claude/local" "$HOME/.bun/bin" /opt/homebrew/bin /usr/local/bin; do
+        [ -n "$dir" ] && [ -x "$dir/$1" ] || continue
+        [ "$(cd "$dir" && pwd -P)" = "$self_dir" ] && continue
+        IFS=$old_ifs
+        printf '%s\n' "$dir/$1"
+        return 0
+    done
+    IFS=$old_ifs
+    return 1
+}
+
+real=$(find_executable "$name") || {
+    echo "[wait-for-setup] cannot find the real '$name' outside $self_dir" >&2
+    exit 127
+}
+
+# Only an agent session waits: Paseo also runs `claude --version` and `claude auth status` with
+# short timeouts, and those must pass straight through. Sessions are the SDK's stream-json mode.
+is_session=false
+for arg in "$@"; do
+    [ "$arg" = "--input-format" ] && is_session=true && break
+done
+
+if [ "$is_session" = true ] && [ -n "${PASEO_AGENT_ID:-}" ]; then
+    if bun=$(find_executable bun); then
+        # From this package, so bun never reads the agent's project `bunfig.toml` (preloads, etc.).
+        (cd "$self_dir/.." && "$bun" src/main.ts) || true
+    else
+        echo "[wait-for-setup] bun not found, starting without waiting for setup" >&2
+    fi
+fi
+
+exec "$real" "$@"

@@ -10,6 +10,11 @@ independently.
 
 - [claude-accounts](packages/claude-accounts/README.md) — switch between saved Claude Code logins.
 
+## Tools
+
+- [wait-for-setup](packages/wait-for-setup/README.md) — hold a Claude agent until its workspace
+  setup has finished. A provider command wrapper, not a daemon plugin.
+
 ## Requirements
 
 - The Paseo version each plugin needs is in its `paseo-plugin.json` (daemon **and** app — each checks

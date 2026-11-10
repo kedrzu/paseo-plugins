@@ -900,6 +900,14 @@
       "name": "@paseo-plugins/claude-accounts",
       "version": "0.0.0",
     },
+    "packages/wait-for-setup": {
+      "name": "@paseo-plugins/wait-for-setup",
+      "version": "0.0.0",
+      "dependencies": {
+        "@getpaseo/client": "0.15.0",
+        "@getpaseo/protocol": "0.15.0",
+      },
+    },
   },
   "patchedDependencies": {
     "bun-types@1.4.4": "patches/bun-types@1.4.4.patch",
@@ -1861,6 +1869,8 @@
     "@parcel/watcher-win32-x64": ["@parcel/watcher-win32-x64@2.6.0", "", { "os": "win32", "cpu": "x64" }, "sha512-cA+/pXV2YkfxlIcXOQ5fSWqAzzPyD78/x5qbK/I0vUkrlYHA8TIz+MXjAbGouguKVSI4bOmkTSJ1/poVSsgt+A=="],
 
     "@paseo-plugins/claude-accounts": ["@paseo-plugins/claude-accounts@workspace:packages/claude-accounts"],
+
+    "@paseo-plugins/wait-for-setup": ["@paseo-plugins/wait-for-setup@workspace:packages/wait-for-setup"],
 
     "@pkgjs/parseargs": ["@pkgjs/parseargs@0.11.0", "", {}, "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="],
 

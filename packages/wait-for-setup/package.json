@@ -1,0 +1,13 @@
+{
+    "name": "@paseo-plugins/wait-for-setup",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "typecheck": "tsgo --noEmit"
+    },
+    "dependencies": {
+        "@getpaseo/client": "0.15.0",
+        "@getpaseo/protocol": "0.15.0"
+    }
+}
