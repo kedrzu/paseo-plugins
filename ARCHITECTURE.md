@@ -21,6 +21,11 @@ checkout or a path in this GitHub repository.
   Code logins: the Keychain item, `oauthAccount` in `~/.claude.json`, the account store and the
   sidebar and Command Center UI.
 
+- `@paseo-plugins/wait-for-setup` (`packages/wait-for-setup`) owns holding a Claude agent until its
+  workspace setup has finished. It is a provider command wrapper (`bin/claude`), not a plugin: plugin
+  hooks time out after 30 seconds and get no setup-finished event. It talks to the daemon through
+  `@getpaseo/client`, the one runtime dependency in the repo, and runs on Bun from its own directory.
+
 Each new plugin is a package `@paseo-plugins/<name>` in `packages/<name>`.
 
 Every plugin follows Paseo's layout rules (`README.md`): only its entries, `paseo-plugin.json` and
