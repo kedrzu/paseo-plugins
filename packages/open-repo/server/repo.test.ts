@@ -7,6 +7,7 @@ import { afterEach, expect, test } from 'bun:test';
 
 import type { Repo } from './repo';
 import { createRepo } from './repo';
+import { repoGithubUrlRpc, repoOpenInFinderRpc, repoOpenInForkRpc } from '../shared/repo';
 
 /** What the fake `gh pr view` does: print a pull request, or fail as it does with none. */
 type GhResult = { url: string; state: string } | 'fail';
@@ -17,6 +18,14 @@ afterEach(async () => {
     for (const directory of directories.splice(0)) {
         await rm(directory, { recursive: true, force: true });
     }
+});
+
+test('the RPC contracts load: defineRpc rejects a name the daemon would refuse', () => {
+    expect([repoOpenInFinderRpc.name, repoOpenInForkRpc.name, repoGithubUrlRpc.name]).toEqual([
+        'repo.open-in-finder',
+        'repo.open-in-fork',
+        'repo.github-url',
+    ]);
 });
 
 test('an open pull request wins over the branch', async () => {
