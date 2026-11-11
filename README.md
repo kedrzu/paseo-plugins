@@ -9,6 +9,8 @@ independently.
 ## Plugins
 
 - [claude-accounts](packages/claude-accounts/README.md) — switch between saved Claude Code logins.
+- [open-in-pen](packages/open-in-pen/README.md) — open the workspace's `.pen` designs in Pen from the
+  Command Center.
 
 ## Tools
 

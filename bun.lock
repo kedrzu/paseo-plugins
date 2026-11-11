@@ -900,6 +900,10 @@
       "name": "@paseo-plugins/claude-accounts",
       "version": "0.0.0",
     },
+    "packages/open-in-pen": {
+      "name": "@paseo-plugins/open-in-pen",
+      "version": "0.0.0",
+    },
     "packages/wait-for-setup": {
       "name": "@paseo-plugins/wait-for-setup",
       "version": "0.0.0",
@@ -1869,6 +1873,8 @@
     "@parcel/watcher-win32-x64": ["@parcel/watcher-win32-x64@2.6.0", "", { "os": "win32", "cpu": "x64" }, "sha512-cA+/pXV2YkfxlIcXOQ5fSWqAzzPyD78/x5qbK/I0vUkrlYHA8TIz+MXjAbGouguKVSI4bOmkTSJ1/poVSsgt+A=="],
 
     "@paseo-plugins/claude-accounts": ["@paseo-plugins/claude-accounts@workspace:packages/claude-accounts"],
+
+    "@paseo-plugins/open-in-pen": ["@paseo-plugins/open-in-pen@workspace:packages/open-in-pen"],
 
     "@paseo-plugins/wait-for-setup": ["@paseo-plugins/wait-for-setup@workspace:packages/wait-for-setup"],
 
