@@ -11,6 +11,8 @@ independently.
 - [claude-accounts](packages/claude-accounts/README.md) — switch between saved Claude Code logins.
 - [open-in-pen](packages/open-in-pen/README.md) — open the workspace's `.pen` designs in Pen from the
   Command Center.
+- [open-repo](packages/open-repo/README.md) — open the workspace in Finder, Fork or on GitHub (its pull
+  request or branch) from the Command Center.
 
 ## Tools
 
