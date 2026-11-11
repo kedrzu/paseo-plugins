@@ -904,6 +904,10 @@
       "name": "@paseo-plugins/open-in-pen",
       "version": "0.0.0",
     },
+    "packages/open-repo": {
+      "name": "@paseo-plugins/open-repo",
+      "version": "0.0.0",
+    },
     "packages/wait-for-setup": {
       "name": "@paseo-plugins/wait-for-setup",
       "version": "0.0.0",
@@ -1875,6 +1879,8 @@
     "@paseo-plugins/claude-accounts": ["@paseo-plugins/claude-accounts@workspace:packages/claude-accounts"],
 
     "@paseo-plugins/open-in-pen": ["@paseo-plugins/open-in-pen@workspace:packages/open-in-pen"],
+
+    "@paseo-plugins/open-repo": ["@paseo-plugins/open-repo@workspace:packages/open-repo"],
 
     "@paseo-plugins/wait-for-setup": ["@paseo-plugins/wait-for-setup@workspace:packages/wait-for-setup"],
 

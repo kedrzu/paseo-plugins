@@ -1,0 +1,8 @@
+{
+    "name": "@paseo-plugins/open-repo",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "typecheck": "tsgo --noEmit && tsgo --noEmit -p client"
+    }
+}

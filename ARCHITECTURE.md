@@ -25,6 +25,10 @@ checkout or a path in this GitHub repository.
   files in the Pen app: finding them on the daemon host, the Command Center item and the picker
   screen.
 
+- `@paseo-plugins/open-repo` (`packages/open-repo`) owns opening a workspace's repository outside
+  Paseo: in Finder and Fork on the daemon host, and its pull request or branch on GitHub, whose URL
+  the daemon host resolves with `git` and `gh` and the client opens.
+
 - `@paseo-plugins/wait-for-setup` (`packages/wait-for-setup`) owns holding a Claude agent until its
   workspace setup has finished. It is a provider command wrapper (`bin/claude`), not a plugin: plugin
   hooks time out after 30 seconds and get no setup-finished event. It talks to the daemon through
