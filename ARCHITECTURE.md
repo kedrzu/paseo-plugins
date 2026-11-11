@@ -21,13 +21,10 @@ checkout or a path in this GitHub repository.
   Code logins: the Keychain item, `oauthAccount` in `~/.claude.json`, the account store and the
   sidebar and Command Center UI.
 
-- `@paseo-plugins/open-in-pen` (`packages/open-in-pen`) owns opening a workspace's `.pen` design
-  files in the Pen app: finding them on the daemon host, the Command Center item and the picker
-  screen.
-
-- `@paseo-plugins/open-repo` (`packages/open-repo`) owns opening a workspace's repository outside
-  Paseo: in Finder and Fork on the daemon host, and its pull request or branch on GitHub, whose URL
-  the daemon host resolves with `git` and `gh` and the client opens.
+- `@paseo-plugins/open-workspace` (`packages/open-workspace`) owns opening a workspace outside
+  Paseo: in Finder and Fork on the daemon host, its pull request or branch on GitHub, whose URL the
+  daemon host resolves with `git` and `gh` and the client opens, and its `.pen` design files in the
+  Pen app, with a picker screen when there are several.
 
 - `@paseo-plugins/wait-for-setup` (`packages/wait-for-setup`) owns holding a Claude agent until its
   workspace setup has finished. It is a provider command wrapper (`bin/claude`), not a plugin: plugin

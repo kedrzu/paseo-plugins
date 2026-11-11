@@ -1,0 +1,7 @@
+{
+    "id": "open-workspace",
+    "description": "Open the workspace in Finder, Fork, on GitHub or its .pen designs in Pen from the Command Center",
+    "requirements": {
+        "paseo": ">=0.15.0"
+    }
+}

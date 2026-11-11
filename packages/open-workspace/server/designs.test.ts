@@ -103,7 +103,7 @@ test('a failed open names the file and suggests installing Pen', async () => {
 });
 
 async function createDirectory(files: Record<string, string>): Promise<string> {
-    const directory = await mkdtemp(join(tmpdir(), 'open-in-pen-'));
+    const directory = await mkdtemp(join(tmpdir(), 'open-workspace-'));
     directories.push(directory);
     await writeFiles(directory, files);
     return directory;

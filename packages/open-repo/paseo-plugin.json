@@ -1,7 +1,0 @@
-{
-    "id": "open-repo",
-    "description": "Open the workspace in Finder, Fork or on GitHub from the Command Center",
-    "requirements": {
-        "paseo": ">=0.15.0"
-    }
-}
