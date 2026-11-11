@@ -21,6 +21,10 @@ checkout or a path in this GitHub repository.
   Code logins: the Keychain item, `oauthAccount` in `~/.claude.json`, the account store and the
   sidebar and Command Center UI.
 
+- `@paseo-plugins/open-in-pen` (`packages/open-in-pen`) owns opening a workspace's `.pen` design
+  files in the Pen app: finding them on the daemon host, the Command Center item and the picker
+  screen.
+
 - `@paseo-plugins/wait-for-setup` (`packages/wait-for-setup`) owns holding a Claude agent until its
   workspace setup has finished. It is a provider command wrapper (`bin/claude`), not a plugin: plugin
   hooks time out after 30 seconds and get no setup-finished event. It talks to the daemon through

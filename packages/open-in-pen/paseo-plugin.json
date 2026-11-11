@@ -1,0 +1,7 @@
+{
+    "id": "open-in-pen",
+    "description": "Open the workspace's .pen design files in Pen from the Command Center",
+    "requirements": {
+        "paseo": ">=0.15.0"
+    }
+}
