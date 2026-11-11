@@ -145,7 +145,7 @@ async function createRepository({
 }
 
 async function createDirectory(): Promise<string> {
-    const directory = await mkdtemp(join(tmpdir(), 'open-repo-'));
+    const directory = await mkdtemp(join(tmpdir(), 'open-workspace-'));
     directories.push(directory);
     return directory;
 }

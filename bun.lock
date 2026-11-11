@@ -900,12 +900,8 @@
       "name": "@paseo-plugins/claude-accounts",
       "version": "0.0.0",
     },
-    "packages/open-in-pen": {
-      "name": "@paseo-plugins/open-in-pen",
-      "version": "0.0.0",
-    },
-    "packages/open-repo": {
-      "name": "@paseo-plugins/open-repo",
+    "packages/open-workspace": {
+      "name": "@paseo-plugins/open-workspace",
       "version": "0.0.0",
     },
     "packages/wait-for-setup": {
@@ -1878,9 +1874,7 @@
 
     "@paseo-plugins/claude-accounts": ["@paseo-plugins/claude-accounts@workspace:packages/claude-accounts"],
 
-    "@paseo-plugins/open-in-pen": ["@paseo-plugins/open-in-pen@workspace:packages/open-in-pen"],
-
-    "@paseo-plugins/open-repo": ["@paseo-plugins/open-repo@workspace:packages/open-repo"],
+    "@paseo-plugins/open-workspace": ["@paseo-plugins/open-workspace@workspace:packages/open-workspace"],
 
     "@paseo-plugins/wait-for-setup": ["@paseo-plugins/wait-for-setup@workspace:packages/wait-for-setup"],
 

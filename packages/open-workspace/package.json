@@ -1,5 +1,5 @@
 {
-    "name": "@paseo-plugins/open-repo",
+    "name": "@paseo-plugins/open-workspace",
     "version": "0.0.0",
     "private": true,
     "scripts": {
