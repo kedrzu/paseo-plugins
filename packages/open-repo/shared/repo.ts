@@ -5,14 +5,14 @@ const directoryInput = z.object({ directory: z.string() });
 
 /** Shows the workspace directory in Finder on the daemon host. */
 export const repoOpenInFinderRpc = defineRpc({
-    name: 'repo.openInFinder',
+    name: 'repo.open-in-finder',
     input: directoryInput,
     output: z.object({}),
 });
 
 /** Opens the workspace repository in the Fork git client on the daemon host. */
 export const repoOpenInForkRpc = defineRpc({
-    name: 'repo.openInFork',
+    name: 'repo.open-in-fork',
     input: directoryInput,
     output: z.object({}),
 });
@@ -22,7 +22,7 @@ export const repoOpenInForkRpc = defineRpc({
  * opens it, so it lands in the browser of the device the user is on.
  */
 export const repoGithubUrlRpc = defineRpc({
-    name: 'repo.githubUrl',
+    name: 'repo.github-url',
     input: directoryInput,
     output: z.object({ url: z.string() }),
 });
