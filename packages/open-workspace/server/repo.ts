@@ -5,6 +5,8 @@ import { z } from 'zod';
 
 /** Fork's bundle ID: `open -b` finds the app wherever it is installed. */
 const FORK_BUNDLE_ID = 'com.DanPristupov.Fork';
+/** VS Code's bundle ID. */
+const VSCODE_BUNDLE_ID = 'com.microsoft.VSCode';
 const DEFAULT_REMOTE = 'origin';
 
 /** `git@github.com:o/r.git`, `ssh://git@github.com/o/r.git`, `https://[user@]github.com/o/r[.git]`. */
@@ -20,13 +22,14 @@ export interface CreateRepoParams {
 export interface Repo {
     openInFinder: (directory: string) => Promise<void>;
     openInFork: (directory: string) => Promise<void>;
+    openInVscode: (directory: string) => Promise<void>;
     /** The open pull request for the checked-out branch, else the branch's code on GitHub. */
     githubUrl: (directory: string) => Promise<string>;
 }
 
 /** Opening a workspace repository in the apps of the daemon host, and finding it on GitHub. */
 export function createRepo({ exec, platform }: CreateRepoParams): Repo {
-    return { openInFinder, openInFork, githubUrl };
+    return { openInFinder, openInFork, openInVscode, githubUrl };
 
     async function openInFinder(directory: string): Promise<void> {
         await assertDirectory(directory, 'Finder');
@@ -35,12 +38,11 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
     }
 
     async function openInFork(directory: string): Promise<void> {
-        await assertDirectory(directory, 'Fork');
-        try {
-            await exec('open', ['-b', FORK_BUNDLE_ID, directory]);
-        } catch (error) {
-            throw new Error('Could not open the repository in Fork. Is Fork installed?', { cause: error });
-        }
+        await openInApp(directory, 'Fork', FORK_BUNDLE_ID);
+    }
+
+    async function openInVscode(directory: string): Promise<void> {
+        await openInApp(directory, 'VS Code', VSCODE_BUNDLE_ID);
     }
 
     async function githubUrl(directory: string): Promise<string> {
@@ -48,6 +50,15 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
             throw new Error('This workspace is not a git repository.');
         }
         return (await findOpenPullRequestUrl(directory)) ?? (await findBranchUrl(directory));
+    }
+
+    async function openInApp(directory: string, app: string, bundleId: string): Promise<void> {
+        await assertDirectory(directory, app);
+        try {
+            await exec('open', ['-b', bundleId, directory]);
+        } catch (error) {
+            throw new Error(`Could not open the repository in ${app}. Is ${app} installed?`, { cause: error });
+        }
     }
 
     async function assertDirectory(directory: string, app: string): Promise<void> {

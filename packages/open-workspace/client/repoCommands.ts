@@ -1,7 +1,7 @@
 import type { PluginCommandCenterItemContribution } from '@getpaseo/plugin/client';
 import { openExternalUrl } from '@getpaseo/plugin/client';
 
-import { repoGithubUrlRpc, repoOpenInFinderRpc, repoOpenInForkRpc } from '../shared/repo';
+import { repoGithubUrlRpc, repoOpenInFinderRpc, repoOpenInForkRpc, repoOpenInVscodeRpc } from '../shared/repo';
 
 /**
  * The workspace Command Center items. A failing `onSelect` throws on purpose: the host shows the
@@ -26,6 +26,16 @@ export const RepoCommands: PluginCommandCenterItemContribution[] = [
         context: 'workspace',
         async onSelect(context) {
             await context.rpc(repoOpenInForkRpc, { directory: context.workspace.directory });
+        },
+    },
+    {
+        id: 'open-in-vscode',
+        title: 'Open in VS Code',
+        icon: 'Code',
+        keywords: ['vscode', 'vs code', 'visual studio code', 'editor', 'code'],
+        context: 'workspace',
+        async onSelect(context) {
+            await context.rpc(repoOpenInVscodeRpc, { directory: context.workspace.directory });
         },
     },
     {
