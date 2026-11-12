@@ -8,7 +8,8 @@ or on GitHub, and its `.pen` designs in [Pen](https://pen.dev).
 - **"Open in VS Code"**: opens the workspace directory in [VS Code](https://code.visualstudio.com).
 - **"Open on GitHub"**: opens the branch's open pull request; without one, the code on the branch.
 - **"Open Design in Pen"**: with one design in the workspace it opens that file; with several it
-  opens a picker listing them by path relative to the workspace; with none it reports so.
+  opens a picker listing them by path relative to the workspace; with none it reports so. The
+  picker is driven from the keyboard: typing filters, ↑/↓ select, Enter opens, Escape goes back.
 
 ## Install
 
@@ -47,4 +48,5 @@ The daemon host works out the URL; the device you picked the command on opens it
 - Only `github.com` remotes; GitHub Enterprise hosts are reported as not on GitHub.
 - "Pushed" means the remote-tracking ref exists locally, so it is as fresh as the last fetch.
 - The Command Center has no submenus, so several designs are picked on a separate screen; picking
-  one returns to the workspace.
+  one returns to the workspace. Arrow keys and Escape reach the filter only on desktop and web: a
+  touch keyboard has no such keys, so on mobile a design is picked by tapping it.
