@@ -22,7 +22,7 @@ checkout or a path in this GitHub repository.
   sidebar and Command Center UI.
 
 - `@paseo-plugins/open-workspace` (`packages/open-workspace`) owns opening a workspace outside
-  Paseo: in Finder and Fork on the daemon host, its pull request or branch on GitHub, whose URL the
+  Paseo: in Finder, Fork and VS Code on the daemon host, its pull request or branch on GitHub, whose URL the
   daemon host resolves with `git` and `gh` and the client opens, and its `.pen` design files in the
   Pen app, with a picker screen when there are several.
 

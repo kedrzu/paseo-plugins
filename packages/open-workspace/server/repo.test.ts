@@ -7,7 +7,7 @@ import { afterEach, expect, test } from 'bun:test';
 
 import type { Repo } from './repo';
 import { createRepo } from './repo';
-import { repoGithubUrlRpc, repoOpenInFinderRpc, repoOpenInForkRpc } from '../shared/repo';
+import { repoGithubUrlRpc, repoOpenInFinderRpc, repoOpenInForkRpc, repoOpenInVscodeRpc } from '../shared/repo';
 
 /** What the fake `gh pr view` does: print a pull request, or fail as it does with none. */
 type GhResult = { url: string; state: string } | 'fail';
@@ -21,11 +21,9 @@ afterEach(async () => {
 });
 
 test('the RPC contracts load: defineRpc rejects a name the daemon would refuse', () => {
-    expect([repoOpenInFinderRpc.name, repoOpenInForkRpc.name, repoGithubUrlRpc.name]).toEqual([
-        'repo.open-in-finder',
-        'repo.open-in-fork',
-        'repo.github-url',
-    ]);
+    expect([repoOpenInFinderRpc.name, repoOpenInForkRpc.name, repoOpenInVscodeRpc.name, repoGithubUrlRpc.name]).toEqual(
+        ['repo.open-in-finder', 'repo.open-in-fork', 'repo.open-in-vscode', 'repo.github-url'],
+    );
 });
 
 test('an open pull request wins over the branch', async () => {
@@ -86,7 +84,7 @@ test('a directory outside git is an error', async () => {
     await expect(repo.githubUrl(directory)).rejects.toThrow('not a git repository');
 });
 
-test('opens the directory in Finder and Fork', async () => {
+test('opens the directory in Finder, Fork and VS Code', async () => {
     const directory = await createDirectory();
     const opened: string[][] = [];
     const repo = createRepo({
@@ -102,10 +100,12 @@ test('opens the directory in Finder and Fork', async () => {
 
     await repo.openInFinder(directory);
     await repo.openInFork(directory);
+    await repo.openInVscode(directory);
 
     expect(opened).toEqual([
         ['-a', 'Finder', directory],
         ['-b', 'com.DanPristupov.Fork', directory],
+        ['-b', 'com.microsoft.VSCode', directory],
     ]);
 });
 

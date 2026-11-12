@@ -17,6 +17,13 @@ export const repoOpenInForkRpc = defineRpc({
     output: z.object({}),
 });
 
+/** Opens the workspace directory in VS Code on the daemon host. */
+export const repoOpenInVscodeRpc = defineRpc({
+    name: 'repo.open-in-vscode',
+    input: directoryInput,
+    output: z.object({}),
+});
+
 /**
  * The GitHub page for the workspace: its open pull request, else the code on its branch. The client
  * opens it, so it lands in the browser of the device the user is on.

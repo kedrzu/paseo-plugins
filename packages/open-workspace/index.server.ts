@@ -4,10 +4,10 @@ import { execCommand } from '@getpaseo/plugin/server';
 import { createDesigns } from './server/designs';
 import { createRepo } from './server/repo';
 import { designsListRpc, designsOpenRpc } from './shared/designs';
-import { repoGithubUrlRpc, repoOpenInFinderRpc, repoOpenInForkRpc } from './shared/repo';
+import { repoGithubUrlRpc, repoOpenInFinderRpc, repoOpenInForkRpc, repoOpenInVscodeRpc } from './shared/repo';
 
 /**
- * Server entry: the daemon host owns the workspace files, its apps (Finder, Fork, Pen) and the git
+ * Server entry: the daemon host owns the workspace files, its apps (Finder, Fork, VS Code, Pen) and the git
  * and `gh` credentials.
  */
 export default function contribute(server: PluginServerContext): () => void {
@@ -20,6 +20,10 @@ export default function contribute(server: PluginServerContext): () => void {
     });
     server.handle(repoOpenInForkRpc, async ({ directory }) => {
         await repo.openInFork(directory);
+        return {};
+    });
+    server.handle(repoOpenInVscodeRpc, async ({ directory }) => {
+        await repo.openInVscode(directory);
         return {};
     });
     server.handle(repoGithubUrlRpc, async ({ directory }) => ({ url: await repo.githubUrl(directory) }));

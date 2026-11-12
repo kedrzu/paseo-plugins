@@ -9,7 +9,7 @@ independently.
 ## Plugins
 
 - [claude-accounts](packages/claude-accounts/README.md) — switch between saved Claude Code logins.
-- [open-workspace](packages/open-workspace/README.md) — open the workspace in Finder, Fork, on
+- [open-workspace](packages/open-workspace/README.md) — open the workspace in Finder, Fork, VS Code, on
   GitHub (its pull request or branch) or its `.pen` designs in Pen from the Command Center.
 
 ## Tools
