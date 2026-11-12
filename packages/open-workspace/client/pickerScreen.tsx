@@ -1,25 +1,35 @@
 import type { PluginHostProps, PluginScreenProps } from '@getpaseo/plugin/client';
 import { useRpc } from '@getpaseo/plugin/client';
-import { Icon, Loading, ScrollView, useToast } from '@getpaseo/plugin/client/ui';
-import { useEffect, useState } from 'react';
+import { FlatList, Icon, Loading, TextInput, useToast } from '@getpaseo/plugin/client/ui';
+import { useEffect, useRef, useState } from 'react';
+import type { FlatList as NativeFlatList, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { designsListRpc, designsOpenRpc } from '../shared/designs';
+import { filterDesigns } from './filterDesigns';
 
 interface DesignListProps extends Pick<PluginHostProps, 'theme'> {
     directory: string;
-    onOpened: () => void;
+    onClose: () => void;
+}
+
+interface DesignPickerProps extends DesignListProps {
+    files: string[];
 }
 
 interface DesignRowProps extends Pick<PluginHostProps, 'theme'> {
     path: string;
+    selected: boolean;
     disabled: boolean;
     onPress: () => void;
 }
 
 type ListState = { step: 'loading' } | { step: 'failed'; message: string } | { step: 'ready'; files: string[] };
 
-/** The designs of one workspace, by path relative to it; a press opens one in Pen. */
+/**
+ * The designs of one workspace, by path relative to it. Driven from the keyboard like the Command
+ * Center it is opened from: typing filters, ↑/↓ select, Enter opens in Pen, Escape goes back.
+ */
 export function PickerScreen({ theme, layout, params, navigation }: PluginScreenProps) {
     // Params are absent at runtime when the screen is opened by a link without them.
     const directory: string | undefined = params.directory;
@@ -42,7 +52,7 @@ export function PickerScreen({ theme, layout, params, navigation }: PluginScreen
                     key={directory}
                     theme={theme}
                     directory={directory}
-                    onOpened={() => {
+                    onClose={() => {
                         if (workspaceId !== undefined) {
                             navigation?.openWorkspace({ workspaceId });
                         }
@@ -53,12 +63,9 @@ export function PickerScreen({ theme, layout, params, navigation }: PluginScreen
     );
 }
 
-function DesignList({ theme, directory, onOpened }: DesignListProps) {
+function DesignList({ theme, directory, onClose }: DesignListProps) {
     const listDesigns = useRpc(designsListRpc);
-    const openDesign = useRpc(designsOpenRpc);
-    const toast = useToast();
     const [state, setState] = useState<ListState>({ step: 'loading' });
-    const [opening, setOpening] = useState(false);
 
     useEffect(() => {
         let current = true;
@@ -91,24 +98,114 @@ function DesignList({ theme, directory, onOpened }: DesignListProps) {
         return <Text style={{ color: theme.colors.foreground }}>No .pen design files in this workspace.</Text>;
     }
     return (
-        <ScrollView contentContainerStyle={{ gap: 4 }}>
-            {state.files.map(path => (
-                <DesignRow
-                    key={path}
-                    theme={theme}
-                    path={path}
-                    disabled={opening}
-                    onPress={() => void open(path)}
-                />
-            ))}
-        </ScrollView>
+        <DesignPicker
+            theme={theme}
+            directory={directory}
+            files={state.files}
+            onClose={onClose}
+        />
     );
+}
+
+function DesignPicker({ theme, directory, files, onClose }: DesignPickerProps) {
+    const openDesign = useRpc(designsOpenRpc);
+    const toast = useToast();
+    const list = useRef<NativeFlatList<string>>(null);
+    const [query, setQuery] = useState('');
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [opening, setOpening] = useState(false);
+    const visible = filterDesigns(files, query);
+
+    useEffect(() => {
+        if (selectedIndex < visible.length) {
+            list.current?.scrollToIndex({ index: selectedIndex, viewPosition: 0.5, animated: false });
+        }
+    }, [selectedIndex]);
+
+    return (
+        <View style={{ flex: 1, gap: 12 }}>
+            <TextInput
+                autoFocus
+                value={query}
+                placeholder="Filter designs"
+                placeholderTextColor={theme.colors.foregroundMuted}
+                onChangeText={text => {
+                    setQuery(text);
+                    setSelectedIndex(0);
+                }}
+                onKeyPress={handleKeyPress}
+                style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    borderRadius: 6,
+                    borderWidth: 1,
+                    borderColor: theme.colors.border,
+                    backgroundColor: theme.colors.surface1,
+                    color: theme.colors.foreground,
+                }}
+            />
+            {visible.length === 0 ? (
+                <Text style={{ color: theme.colors.foregroundMuted }}>No design matches “{query}”.</Text>
+            ) : (
+                <FlatList
+                    ref={list}
+                    data={visible}
+                    keyExtractor={path => path}
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={{ gap: 4 }}
+                    // The rows are measured lazily, so a jump past the rendered ones is skipped.
+                    onScrollToIndexFailed={() => undefined}
+                    renderItem={({ item, index }) => (
+                        <DesignRow
+                            theme={theme}
+                            path={item}
+                            selected={index === selectedIndex}
+                            disabled={opening}
+                            onPress={() => void open(item)}
+                        />
+                    )}
+                />
+            )}
+        </View>
+    );
+
+    function handleKeyPress(event: NativeSyntheticEvent<TextInputKeyPressEventData>): void {
+        switch (event.nativeEvent.key) {
+            case 'ArrowDown':
+                event.preventDefault();
+                moveSelection(1);
+                break;
+            case 'ArrowUp':
+                event.preventDefault();
+                moveSelection(-1);
+                break;
+            case 'Enter': {
+                // Prevented so the input neither submits nor blurs.
+                event.preventDefault();
+                const path = visible[selectedIndex];
+                if (path !== undefined && !opening) {
+                    void open(path);
+                }
+                break;
+            }
+            case 'Escape':
+                event.preventDefault();
+                onClose();
+                break;
+        }
+    }
+
+    function moveSelection(step: number): void {
+        if (visible.length > 0) {
+            setSelectedIndex((selectedIndex + step + visible.length) % visible.length);
+        }
+    }
 
     async function open(path: string): Promise<void> {
         setOpening(true);
         try {
             await openDesign({ directory, path });
-            onOpened();
+            onClose();
         } catch (error) {
             toast.error(getErrorMessage(error));
         } finally {
@@ -117,11 +214,11 @@ function DesignList({ theme, directory, onOpened }: DesignListProps) {
     }
 }
 
-function DesignRow({ theme, path, disabled, onPress }: DesignRowProps) {
+function DesignRow({ theme, path, selected, disabled, onPress }: DesignRowProps) {
     return (
         <Pressable
             accessibilityRole="button"
-            accessibilityState={{ disabled }}
+            accessibilityState={{ disabled, selected }}
             disabled={disabled}
             onPress={onPress}
             style={({ pressed }) => ({
@@ -131,16 +228,16 @@ function DesignRow({ theme, path, disabled, onPress }: DesignRowProps) {
                 paddingHorizontal: 12,
                 paddingVertical: 8,
                 borderRadius: 6,
-                backgroundColor: pressed ? theme.colors.border : theme.colors.surface2,
+                backgroundColor: selected ? theme.colors.accent : pressed ? theme.colors.border : theme.colors.surface2,
                 opacity: disabled ? 0.5 : 1,
             })}
         >
             <Icon
                 name="PenTool"
                 size={16}
-                color={theme.colors.foregroundMuted}
+                color={selected ? theme.colors.accentForeground : theme.colors.foregroundMuted}
             />
-            <Text style={{ color: theme.colors.foreground }}>{path}</Text>
+            <Text style={{ color: selected ? theme.colors.accentForeground : theme.colors.foreground }}>{path}</Text>
         </Pressable>
     );
 }
