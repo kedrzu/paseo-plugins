@@ -33,3 +33,13 @@ export const repoGithubUrlRpc = defineRpc({
     input: directoryInput,
     output: z.object({ url: z.string() }),
 });
+
+/**
+ * The "Files changed" tab of the workspace's open pull request, for reviewing its code. The client
+ * opens it, so it lands in the browser of the device the user is on.
+ */
+export const repoReviewUrlRpc = defineRpc({
+    name: 'repo.review-url',
+    input: directoryInput,
+    output: z.object({ url: z.string() }),
+});

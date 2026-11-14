@@ -7,6 +7,8 @@ or on GitHub, and its `.pen` designs in [Pen](https://pen.dev).
 - **"Open in Fork"**: opens the repository in the [Fork](https://git-fork.com) git client.
 - **"Open in VS Code"**: opens the workspace directory in [VS Code](https://code.visualstudio.com).
 - **"Open on GitHub"**: opens the branch's open pull request; without one, the code on the branch.
+- **"Review Code"**: opens the "Files changed" tab of the branch's open pull request (`<pr>/files`);
+  without an open pull request, or without a logged-in `gh`, it reports so.
 - **"Open Design in Pen"**: with one design in the workspace it opens that file; with several it
   opens a picker listing them by path relative to the workspace; with none it reports so. The
   picker is driven from the keyboard: typing filters, ↑/↓ select, Enter opens, Escape goes back.
