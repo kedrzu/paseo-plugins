@@ -25,11 +25,13 @@ export interface Repo {
     openInVscode: (directory: string) => Promise<void>;
     /** The open pull request for the checked-out branch, else the branch's code on GitHub. */
     githubUrl: (directory: string) => Promise<string>;
+    /** The "Files changed" tab of the open pull request for the checked-out branch. */
+    reviewUrl: (directory: string) => Promise<string>;
 }
 
 /** Opening a workspace repository in the apps of the daemon host, and finding it on GitHub. */
 export function createRepo({ exec, platform }: CreateRepoParams): Repo {
-    return { openInFinder, openInFork, openInVscode, githubUrl };
+    return { openInFinder, openInFork, openInVscode, githubUrl, reviewUrl };
 
     async function openInFinder(directory: string): Promise<void> {
         await assertDirectory(directory, 'Finder');
@@ -46,10 +48,23 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
     }
 
     async function githubUrl(directory: string): Promise<string> {
+        await assertGitRepository(directory);
+        return (await findOpenPullRequestUrl(directory)) ?? (await findBranchUrl(directory));
+    }
+
+    async function reviewUrl(directory: string): Promise<string> {
+        await assertGitRepository(directory);
+        const pullRequestUrl = await findOpenPullRequestUrl(directory);
+        if (pullRequestUrl === null) {
+            throw new Error('This branch has no open pull request, or gh is missing or not logged in.');
+        }
+        return `${pullRequestUrl.replace(/\/$/, '')}/files`;
+    }
+
+    async function assertGitRepository(directory: string): Promise<void> {
         if ((await tryGit(directory, ['rev-parse', '--is-inside-work-tree'])) === null) {
             throw new Error('This workspace is not a git repository.');
         }
-        return (await findOpenPullRequestUrl(directory)) ?? (await findBranchUrl(directory));
     }
 
     async function openInApp(directory: string, app: string, bundleId: string): Promise<void> {

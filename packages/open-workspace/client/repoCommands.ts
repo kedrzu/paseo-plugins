@@ -1,7 +1,13 @@
 import type { PluginCommandCenterItemContribution } from '@getpaseo/plugin/client';
 import { openExternalUrl } from '@getpaseo/plugin/client';
 
-import { repoGithubUrlRpc, repoOpenInFinderRpc, repoOpenInForkRpc, repoOpenInVscodeRpc } from '../shared/repo';
+import {
+    repoGithubUrlRpc,
+    repoOpenInFinderRpc,
+    repoOpenInForkRpc,
+    repoOpenInVscodeRpc,
+    repoReviewUrlRpc,
+} from '../shared/repo';
 
 /**
  * The workspace Command Center items. A failing `onSelect` throws on purpose: the host shows the
@@ -47,6 +53,17 @@ export const RepoCommands: PluginCommandCenterItemContribution[] = [
         async onSelect(context) {
             // The daemon host resolves the URL; the device the user is on opens it.
             const { url } = await context.rpc(repoGithubUrlRpc, { directory: context.workspace.directory });
+            await openExternalUrl(url);
+        },
+    },
+    {
+        id: 'review-code',
+        title: 'Review Code',
+        icon: 'FileDiff',
+        keywords: ['review', 'code review', 'diff', 'files changed', 'pull request', 'pr', 'github'],
+        context: 'workspace',
+        async onSelect(context) {
+            const { url } = await context.rpc(repoReviewUrlRpc, { directory: context.workspace.directory });
             await openExternalUrl(url);
         },
     },

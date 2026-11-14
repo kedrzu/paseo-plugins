@@ -7,7 +7,13 @@ import { afterEach, expect, test } from 'bun:test';
 
 import type { Repo } from './repo';
 import { createRepo } from './repo';
-import { repoGithubUrlRpc, repoOpenInFinderRpc, repoOpenInForkRpc, repoOpenInVscodeRpc } from '../shared/repo';
+import {
+    repoGithubUrlRpc,
+    repoOpenInFinderRpc,
+    repoOpenInForkRpc,
+    repoOpenInVscodeRpc,
+    repoReviewUrlRpc,
+} from '../shared/repo';
 
 /** What the fake `gh pr view` does: print a pull request, or fail as it does with none. */
 type GhResult = { url: string; state: string } | 'fail';
@@ -21,9 +27,19 @@ afterEach(async () => {
 });
 
 test('the RPC contracts load: defineRpc rejects a name the daemon would refuse', () => {
-    expect([repoOpenInFinderRpc.name, repoOpenInForkRpc.name, repoOpenInVscodeRpc.name, repoGithubUrlRpc.name]).toEqual(
-        ['repo.open-in-finder', 'repo.open-in-fork', 'repo.open-in-vscode', 'repo.github-url'],
-    );
+    expect([
+        repoOpenInFinderRpc.name,
+        repoOpenInForkRpc.name,
+        repoOpenInVscodeRpc.name,
+        repoGithubUrlRpc.name,
+        repoReviewUrlRpc.name,
+    ]).toEqual([
+        'repo.open-in-finder',
+        'repo.open-in-fork',
+        'repo.open-in-vscode',
+        'repo.github-url',
+        'repo.review-url',
+    ]);
 });
 
 test('an open pull request wins over the branch', async () => {
@@ -82,6 +98,22 @@ test('a directory outside git is an error', async () => {
     const repo = createTestRepo('fail');
 
     await expect(repo.githubUrl(directory)).rejects.toThrow('not a git repository');
+});
+
+test('review opens the files tab of the open pull request', async () => {
+    const directory = await createRepository({ branch: 'feat/x', remoteUrl: 'git@github.com:acme/app.git' });
+    const repo = createTestRepo({ url: 'https://github.com/acme/app/pull/7', state: 'OPEN' });
+
+    expect(await repo.reviewUrl(directory)).toBe('https://github.com/acme/app/pull/7/files');
+});
+
+test('review without an open pull request is an error', async () => {
+    const directory = await createRepository({ branch: 'feat/x', remoteUrl: 'git@github.com:acme/app.git' });
+
+    await expect(
+        createTestRepo({ url: 'https://github.com/acme/app/pull/7', state: 'MERGED' }).reviewUrl(directory),
+    ).rejects.toThrow('no open pull request');
+    await expect(createTestRepo('fail').reviewUrl(directory)).rejects.toThrow('no open pull request');
 });
 
 test('opens the directory in Finder, Fork and VS Code', async () => {
