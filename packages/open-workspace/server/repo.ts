@@ -3,10 +3,14 @@ import { stat } from 'node:fs/promises';
 import type { execCommand } from '@getpaseo/plugin/server';
 import { z } from 'zod';
 
+import { openWithApp } from './openApp';
+
 /** Fork's bundle ID: `open -b` finds the app wherever it is installed. */
 const FORK_BUNDLE_ID = 'com.DanPristupov.Fork';
 /** VS Code's bundle ID. */
 const VSCODE_BUNDLE_ID = 'com.microsoft.VSCode';
+/** Zed's bundle ID (the stable channel). */
+const ZED_BUNDLE_ID = 'dev.zed.Zed';
 const DEFAULT_REMOTE = 'origin';
 
 /** `git@github.com:o/r.git`, `ssh://git@github.com/o/r.git`, `https://[user@]github.com/o/r[.git]`. */
@@ -23,6 +27,7 @@ export interface Repo {
     openInFinder: (directory: string) => Promise<void>;
     openInFork: (directory: string) => Promise<void>;
     openInVscode: (directory: string) => Promise<void>;
+    openInZed: (directory: string) => Promise<void>;
     /** The open pull request for the checked-out branch, else the branch's code on GitHub. */
     githubUrl: (directory: string) => Promise<string>;
     /** The "Files changed" tab of the open pull request for the checked-out branch. */
@@ -31,7 +36,7 @@ export interface Repo {
 
 /** Opening a workspace repository in the apps of the daemon host, and finding it on GitHub. */
 export function createRepo({ exec, platform }: CreateRepoParams): Repo {
-    return { openInFinder, openInFork, openInVscode, githubUrl, reviewUrl };
+    return { openInFinder, openInFork, openInVscode, openInZed, githubUrl, reviewUrl };
 
     async function openInFinder(directory: string): Promise<void> {
         await assertDirectory(directory, 'Finder');
@@ -45,6 +50,10 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
 
     async function openInVscode(directory: string): Promise<void> {
         await openInApp(directory, 'VS Code', VSCODE_BUNDLE_ID);
+    }
+
+    async function openInZed(directory: string): Promise<void> {
+        await openInApp(directory, 'Zed', ZED_BUNDLE_ID);
     }
 
     async function githubUrl(directory: string): Promise<string> {
@@ -70,7 +79,7 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
     async function openInApp(directory: string, app: string, bundleId: string): Promise<void> {
         await assertDirectory(directory, app);
         try {
-            await exec('open', ['-b', bundleId, directory]);
+            await openWithApp(exec, bundleId, directory);
         } catch (error) {
             throw new Error(`Could not open the repository in ${app}. Is ${app} installed?`, { cause: error });
         }

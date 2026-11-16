@@ -12,6 +12,7 @@ import {
     repoOpenInFinderRpc,
     repoOpenInForkRpc,
     repoOpenInVscodeRpc,
+    repoOpenInZedRpc,
     repoReviewUrlRpc,
 } from '../shared/repo';
 
@@ -31,12 +32,14 @@ test('the RPC contracts load: defineRpc rejects a name the daemon would refuse',
         repoOpenInFinderRpc.name,
         repoOpenInForkRpc.name,
         repoOpenInVscodeRpc.name,
+        repoOpenInZedRpc.name,
         repoGithubUrlRpc.name,
         repoReviewUrlRpc.name,
     ]).toEqual([
         'repo.open-in-finder',
         'repo.open-in-fork',
         'repo.open-in-vscode',
+        'repo.open-in-zed',
         'repo.github-url',
         'repo.review-url',
     ]);
@@ -116,7 +119,7 @@ test('review without an open pull request is an error', async () => {
     await expect(createTestRepo('fail').reviewUrl(directory)).rejects.toThrow('no open pull request');
 });
 
-test('opens the directory in Finder, Fork and VS Code', async () => {
+test('opens the directory in Finder, Fork, VS Code and Zed', async () => {
     const directory = await createDirectory();
     const opened: string[][] = [];
     const repo = createRepo({
@@ -133,12 +136,39 @@ test('opens the directory in Finder, Fork and VS Code', async () => {
     await repo.openInFinder(directory);
     await repo.openInFork(directory);
     await repo.openInVscode(directory);
+    await repo.openInZed(directory);
 
     expect(opened).toEqual([
         ['-a', 'Finder', directory],
         ['-b', 'com.DanPristupov.Fork', directory],
         ['-b', 'com.microsoft.VSCode', directory],
+        ['-b', 'dev.zed.Zed', directory],
     ]);
+});
+
+test('launches an app without the Electron variables of the plugin host', async () => {
+    const directory = await createDirectory();
+    let env: NodeJS.ProcessEnv | undefined;
+    const repo = createRepo({
+        platform: 'darwin',
+        exec: (_command, _args, options) => {
+            env = options?.env;
+            return Promise.resolve({ stdout: '', stderr: '' });
+        },
+    });
+    process.env.ELECTRON_RUN_AS_NODE = '1';
+    process.env.NODE_CHANNEL_FD = '3';
+    try {
+        await repo.openInVscode(directory);
+    } finally {
+        delete process.env.ELECTRON_RUN_AS_NODE;
+        delete process.env.NODE_CHANNEL_FD;
+    }
+
+    expect(env).toBeDefined();
+    expect(env).not.toHaveProperty('ELECTRON_RUN_AS_NODE');
+    expect(env).not.toHaveProperty('NODE_CHANNEL_FD');
+    expect(env?.PATH).toBe(process.env.PATH);
 });
 
 test('refuses a path that is not a directory, and other platforms', async () => {

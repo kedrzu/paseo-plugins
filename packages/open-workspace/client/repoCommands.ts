@@ -6,6 +6,7 @@ import {
     repoOpenInFinderRpc,
     repoOpenInForkRpc,
     repoOpenInVscodeRpc,
+    repoOpenInZedRpc,
     repoReviewUrlRpc,
 } from '../shared/repo';
 
@@ -42,6 +43,16 @@ export const RepoCommands: PluginCommandCenterItemContribution[] = [
         context: 'workspace',
         async onSelect(context) {
             await context.rpc(repoOpenInVscodeRpc, { directory: context.workspace.directory });
+        },
+    },
+    {
+        id: 'open-in-zed',
+        title: 'Open in Zed',
+        icon: 'Code',
+        keywords: ['zed', 'editor', 'code'],
+        context: 'workspace',
+        async onSelect(context) {
+            await context.rpc(repoOpenInZedRpc, { directory: context.workspace.directory });
         },
     },
     {

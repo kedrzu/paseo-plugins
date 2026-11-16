@@ -3,6 +3,8 @@ import { join } from 'node:path';
 
 import type { execCommand } from '@getpaseo/plugin/server';
 
+import { openWithApp } from './openApp';
+
 /** Pen's bundle ID: `open -b` finds the app wherever it is installed. */
 const PEN_BUNDLE_ID = 'dev.pencil.desktop';
 const PEN_EXTENSION = '.pen';
@@ -38,7 +40,7 @@ export function createDesigns({ exec, platform }: CreateDesignsParams): Designs 
             throw new Error(`${path} is not a design in this workspace.`);
         }
         try {
-            await exec('open', ['-b', PEN_BUNDLE_ID, join(directory, path)]);
+            await openWithApp(exec, PEN_BUNDLE_ID, join(directory, path));
         } catch (error) {
             throw new Error(`Could not open ${path} in Pen. Is Pen installed?`, { cause: error });
         }
