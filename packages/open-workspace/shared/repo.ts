@@ -24,6 +24,13 @@ export const repoOpenInVscodeRpc = defineRpc({
     output: z.object({}),
 });
 
+/** Opens the workspace directory in Zed on the daemon host. */
+export const repoOpenInZedRpc = defineRpc({
+    name: 'repo.open-in-zed',
+    input: directoryInput,
+    output: z.object({}),
+});
+
 /**
  * The GitHub page for the workspace: its open pull request, else the code on its branch. The client
  * opens it, so it lands in the browser of the device the user is on.

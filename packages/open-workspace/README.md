@@ -1,11 +1,12 @@
 # open-workspace
 
-Open the workspace outside Paseo from the Command Center: its repository in Finder, Fork, VS Code
-or on GitHub, and its `.pen` designs in [Pen](https://pen.dev).
+Open the workspace outside Paseo from the Command Center: its repository in Finder, Fork, VS Code,
+Zed or on GitHub, and its `.pen` designs in [Pen](https://pen.dev).
 
 - **"Open in Finder"**: shows the workspace directory in Finder.
 - **"Open in Fork"**: opens the repository in the [Fork](https://git-fork.com) git client.
 - **"Open in VS Code"**: opens the workspace directory in [VS Code](https://code.visualstudio.com).
+- **"Open in Zed"**: opens the workspace directory in [Zed](https://zed.dev).
 - **"Open on GitHub"**: opens the branch's open pull request; without one, the code on the branch.
 - **"Review Code"**: opens the "Files changed" tab of the branch's open pull request (`<pr>/files`);
   without an open pull request, or without a logged-in `gh`, it reports so.
@@ -44,9 +45,11 @@ The daemon host works out the URL; the device you picked the command on opens it
 
 ## Limitations
 
-- Finder, Fork, VS Code and Pen open on the daemon host and work on macOS only (`open -a Finder`,
-  `open -b com.DanPristupov.Fork`,
-  `open -b com.microsoft.VSCode`, `open -b dev.pencil.desktop`).
+- Finder, Fork, VS Code, Zed and Pen open on the daemon host and work on macOS only (`open -a Finder`,
+  `open -b com.DanPristupov.Fork`, `open -b com.microsoft.VSCode`, `open -b dev.zed.Zed`,
+  `open -b dev.pencil.desktop`). Zed Preview and Nightly have their own bundle IDs and are not used.
+- The apps are launched without the `ELECTRON_*` and `NODE_CHANNEL_*` variables of the plugin host,
+  which would otherwise start a closed Electron app (VS Code, Pen) as a bare Node process.
 - Only `github.com` remotes; GitHub Enterprise hosts are reported as not on GitHub.
 - "Pushed" means the remote-tracking ref exists locally, so it is as fresh as the last fetch.
 - The Command Center has no submenus, so several designs are picked on a separate screen; picking

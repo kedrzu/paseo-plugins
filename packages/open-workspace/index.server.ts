@@ -9,11 +9,12 @@ import {
     repoOpenInFinderRpc,
     repoOpenInForkRpc,
     repoOpenInVscodeRpc,
+    repoOpenInZedRpc,
     repoReviewUrlRpc,
 } from './shared/repo';
 
 /**
- * Server entry: the daemon host owns the workspace files, its apps (Finder, Fork, VS Code, Pen) and the git
+ * Server entry: the daemon host owns the workspace files, its apps (Finder, Fork, VS Code, Zed, Pen) and the git
  * and `gh` credentials.
  */
 export default function contribute(server: PluginServerContext): () => void {
@@ -30,6 +31,10 @@ export default function contribute(server: PluginServerContext): () => void {
     });
     server.handle(repoOpenInVscodeRpc, async ({ directory }) => {
         await repo.openInVscode(directory);
+        return {};
+    });
+    server.handle(repoOpenInZedRpc, async ({ directory }) => {
+        await repo.openInZed(directory);
         return {};
     });
     server.handle(repoGithubUrlRpc, async ({ directory }) => ({ url: await repo.githubUrl(directory) }));
