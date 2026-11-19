@@ -1,6 +1,6 @@
 #!/bin/sh
 # Paseo provider command for Claude Code: holds an agent's session until its workspace setup has
-# finished, isolates it from the user scope when the project opts in, then execs the real `claude`.
+# finished, isolates it from the user scope, then execs the real `claude`.
 # See ../README.md.
 set -eu
 
@@ -43,21 +43,10 @@ if [ "$is_session" = true ] && [ -n "${PASEO_AGENT_ID:-}" ]; then
     fi
 fi
 
-# Whether the project at the session's cwd opted out of the user scope: `.claude/isolated` in the cwd
-# or a parent, up to the repository root.
-is_isolated() {
-    dir=$PWD
-    while :; do
-        [ -e "$dir/.claude/isolated" ] && return 0
-        [ -e "$dir/.git" ] || [ "$dir" = / ] && return 1
-        dir=$(dirname "$dir")
-    done
-}
-
-# Isolation reads only project and local settings, so no user plugins, MCP servers, `CLAUDE.md` or
-# settings, and turns off claude.ai connectors and synced skills. Paseo's own
+# Every session is isolated from the user scope: only project and local settings, so no user plugins,
+# MCP servers, `CLAUDE.md` or settings, and no claude.ai connectors or synced skills. Paseo's own
 # `--setting-sources=user,project,local` is replaced rather than repeated.
-if [ "$is_session" = true ] && is_isolated; then
+if [ "$is_session" = true ]; then
     skip=false
     first=true
     for arg in "$@"; do
@@ -74,7 +63,6 @@ if [ "$is_session" = true ] && is_isolated; then
     done
     set -- "$@" --setting-sources=project,local
     export ENABLE_CLAUDEAI_MCP_SERVERS=false
-    echo "[claude-launcher] isolated from the user scope by .claude/isolated" >&2
 fi
 
 exec "$real" "$@"

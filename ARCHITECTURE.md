@@ -31,8 +31,8 @@ checkout or a path in this GitHub repository.
   Pen app, with a picker screen when there are several.
 
 - `@paseo-plugins/claude-launcher` (`packages/claude-launcher`) owns how Paseo starts Claude Code:
-  holding an agent until its workspace setup has finished, and isolating a session from the user scope
-  when its project has a `.claude/isolated` marker. It is a provider command wrapper (`bin/claude`), not a plugin: plugin
+  holding an agent until its workspace setup has finished, and isolating every session from the user
+  scope. It is a provider command wrapper (`bin/claude`), not a plugin: plugin
   hooks time out after 30 seconds and get no setup-finished event. It talks to the daemon through
   `@getpaseo/client`, the one runtime dependency in the repo, and runs on Bun from its own directory.
 

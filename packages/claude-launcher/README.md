@@ -3,8 +3,7 @@
 Paseo's provider command for Claude Code. It does two things before starting the real `claude`:
 
 - [waits for workspace setup](#waiting-for-setup);
-- [isolates the session from the user scope](#isolation-from-the-user-scope) when the project opts
-  in.
+- [isolates the session from the user scope](#isolation-from-the-user-scope).
 
 ## Waiting for setup
 
@@ -40,27 +39,27 @@ which Paseo writes to the daemon log as `Claude Agent SDK stderr`.
 
 ## Isolation from the user scope
 
-A project that commits an empty `.claude/isolated` file gets sessions that see only what the project
-declares: its `.claude/settings.json`, `.claude/settings.local.json`, `.mcp.json` and `CLAUDE.md`.
-Nothing installed in the user scope reaches them — user plugins, MCP servers in `~/.claude.json`,
-claude.ai connectors and skills synced from the claude.ai account. It is an allowlist: anything
-installed at user scope later stays out too.
+Every agent session sees only what its project declares: `.claude/settings.json`,
+`.claude/settings.local.json`, `.mcp.json` and the project's `CLAUDE.md`. Nothing installed in the
+user scope reaches it — user plugins, MCP servers in `~/.claude.json`, claude.ai connectors and skills
+synced from the claude.ai account. It is an allowlist: anything installed at user scope later stays
+out too. There is no opt-out.
 
-For a session (the same `--input-format` check as above) whose cwd, or a parent up to the repository
-root, has `.claude/isolated`, the wrapper:
+For a session (the same `--input-format` check as above), the wrapper:
 
 - replaces Paseo's `--setting-sources=user,project,local` with `--setting-sources=project,local`;
 - sets `ENABLE_CLAUDEAI_MCP_SERVERS=false`, which drops claude.ai connectors and synced skills.
 
 Paseo's own `--mcp-config` (the `paseo` server) still loads. `--strict-mcp-config` is deliberately
 not used: it would drop the project's `.mcp.json`. Claude Code's built-ins (bundled skills,
-`@builtin` plugins) remain. Without the marker, and for `claude --version` or `auth status`, nothing
-changes.
+`@builtin` plugins) remain. `claude --version` and `auth status` are unchanged.
 
-Trade-off: the user scope is skipped as a whole, not only its extensions. `~/.claude/settings.json`
-(permissions, hooks, `env`, UI options) and `~/.claude/CLAUDE.md` are not read, so the project must
-carry what it needs: plugins and marketplaces in `enabledPlugins`/`extraKnownMarketplaces`, MCP
-servers in `.mcp.json` with `enableAllProjectMcpServers`, and permissions in its settings.
+Trade-off: the user scope is skipped as a whole, for every Paseo agent. `~/.claude/settings.json`
+(permissions, hooks, `env`, UI options), `~/.claude/CLAUDE.md`, MCP servers in `~/.claude.json` and
+claude.ai connectors are not loaded, so each project must carry what it needs: plugins and
+marketplaces in `enabledPlugins`/`extraKnownMarketplaces`, MCP servers in `.mcp.json` with
+`enableAllProjectMcpServers`, and permissions in its settings. Claude Code run outside Paseo is
+unaffected.
 
 ## Install
 
@@ -71,10 +70,7 @@ bun install   # in this repository, for @getpaseo/client
 In `$PASEO_HOME/config.json` (default `~/.paseo/config.json`), under `agents.providers.claude`:
 
 ```json
-"command": {
-    "mode": "replace",
-    "argv": ["/path/to/paseo-plugins/packages/claude-launcher/bin/claude"]
-}
+"command": ["/path/to/paseo-plugins/packages/claude-launcher/bin/claude"]
 ```
 
 Then `paseo reload`. The path must stay valid: point it at a checkout that stays on `main`.

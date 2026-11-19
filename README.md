@@ -17,7 +17,7 @@ independently.
 ## Tools
 
 - [claude-launcher](packages/claude-launcher/README.md) — Paseo's command for Claude Code: holds an
-  agent until its workspace setup has finished, and isolates projects that opt out of the user scope.
+  agent until its workspace setup has finished, and isolates every session from the user scope.
   A provider command wrapper, not a daemon plugin.
 
 ## Requirements
