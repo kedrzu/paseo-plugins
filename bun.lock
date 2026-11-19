@@ -900,6 +900,10 @@
       "name": "@paseo-plugins/claude-accounts",
       "version": "0.0.0",
     },
+    "packages/claude-trust": {
+      "name": "@paseo-plugins/claude-trust",
+      "version": "0.0.0",
+    },
     "packages/open-workspace": {
       "name": "@paseo-plugins/open-workspace",
       "version": "0.0.0",
@@ -1873,6 +1877,8 @@
     "@parcel/watcher-win32-x64": ["@parcel/watcher-win32-x64@2.6.0", "", { "os": "win32", "cpu": "x64" }, "sha512-cA+/pXV2YkfxlIcXOQ5fSWqAzzPyD78/x5qbK/I0vUkrlYHA8TIz+MXjAbGouguKVSI4bOmkTSJ1/poVSsgt+A=="],
 
     "@paseo-plugins/claude-accounts": ["@paseo-plugins/claude-accounts@workspace:packages/claude-accounts"],
+
+    "@paseo-plugins/claude-trust": ["@paseo-plugins/claude-trust@workspace:packages/claude-trust"],
 
     "@paseo-plugins/open-workspace": ["@paseo-plugins/open-workspace@workspace:packages/open-workspace"],
 
