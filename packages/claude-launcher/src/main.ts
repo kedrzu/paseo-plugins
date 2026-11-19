@@ -77,5 +77,5 @@ async function isLinkedWorktree(cwd: string) {
 }
 
 function log(message: string) {
-    process.stderr.write(`[wait-for-setup] ${message}\n`);
+    process.stderr.write(`[claude-launcher] ${message}\n`);
 }

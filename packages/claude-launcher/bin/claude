@@ -1,6 +1,7 @@
 #!/bin/sh
 # Paseo provider command for Claude Code: holds an agent's session until its workspace setup has
-# finished, then execs the real `claude` with the same arguments. See ../README.md.
+# finished, isolates it from the user scope, then execs the real `claude`.
+# See ../README.md.
 set -eu
 
 self_dir=$(cd "$(dirname "$0")" && pwd -P)
@@ -22,7 +23,7 @@ find_executable() {
 }
 
 real=$(find_executable "$name") || {
-    echo "[wait-for-setup] cannot find the real '$name' outside $self_dir" >&2
+    echo "[claude-launcher] cannot find the real '$name' outside $self_dir" >&2
     exit 127
 }
 
@@ -38,8 +39,30 @@ if [ "$is_session" = true ] && [ -n "${PASEO_AGENT_ID:-}" ]; then
         # From this package, so bun never reads the agent's project `bunfig.toml` (preloads, etc.).
         (cd "$self_dir/.." && "$bun" src/main.ts) || true
     else
-        echo "[wait-for-setup] bun not found, starting without waiting for setup" >&2
+        echo "[claude-launcher] bun not found, starting without waiting for setup" >&2
     fi
+fi
+
+# Every session is isolated from the user scope: only project and local settings, so no user plugins,
+# MCP servers, `CLAUDE.md` or settings, and no claude.ai connectors or synced skills. Paseo's own
+# `--setting-sources=user,project,local` is replaced rather than repeated.
+if [ "$is_session" = true ]; then
+    skip=false
+    first=true
+    for arg in "$@"; do
+        [ "$first" = true ] && set -- && first=false
+        if [ "$skip" = true ]; then
+            skip=false
+            continue
+        fi
+        case $arg in
+            --setting-sources) skip=true && continue ;;
+            --setting-sources=*) continue ;;
+        esac
+        set -- "$@" "$arg"
+    done
+    set -- "$@" --setting-sources=project,local
+    export ENABLE_CLAUDEAI_MCP_SERVERS=false
 fi
 
 exec "$real" "$@"

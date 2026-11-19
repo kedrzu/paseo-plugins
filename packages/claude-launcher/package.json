@@ -1,5 +1,5 @@
 {
-    "name": "@paseo-plugins/wait-for-setup",
+    "name": "@paseo-plugins/claude-launcher",
     "version": "0.0.0",
     "private": true,
     "type": "module",
