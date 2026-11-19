@@ -900,6 +900,14 @@
       "name": "@paseo-plugins/claude-accounts",
       "version": "0.0.0",
     },
+    "packages/claude-launcher": {
+      "name": "@paseo-plugins/claude-launcher",
+      "version": "0.0.0",
+      "dependencies": {
+        "@getpaseo/client": "0.15.0",
+        "@getpaseo/protocol": "0.15.0",
+      },
+    },
     "packages/claude-trust": {
       "name": "@paseo-plugins/claude-trust",
       "version": "0.0.0",
@@ -907,14 +915,6 @@
     "packages/open-workspace": {
       "name": "@paseo-plugins/open-workspace",
       "version": "0.0.0",
-    },
-    "packages/wait-for-setup": {
-      "name": "@paseo-plugins/wait-for-setup",
-      "version": "0.0.0",
-      "dependencies": {
-        "@getpaseo/client": "0.15.0",
-        "@getpaseo/protocol": "0.15.0",
-      },
     },
   },
   "patchedDependencies": {
@@ -1878,11 +1878,11 @@
 
     "@paseo-plugins/claude-accounts": ["@paseo-plugins/claude-accounts@workspace:packages/claude-accounts"],
 
+    "@paseo-plugins/claude-launcher": ["@paseo-plugins/claude-launcher@workspace:packages/claude-launcher"],
+
     "@paseo-plugins/claude-trust": ["@paseo-plugins/claude-trust@workspace:packages/claude-trust"],
 
     "@paseo-plugins/open-workspace": ["@paseo-plugins/open-workspace@workspace:packages/open-workspace"],
-
-    "@paseo-plugins/wait-for-setup": ["@paseo-plugins/wait-for-setup@workspace:packages/wait-for-setup"],
 
     "@pkgjs/parseargs": ["@pkgjs/parseargs@0.11.0", "", {}, "sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg=="],
 

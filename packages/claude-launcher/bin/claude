@@ -1,0 +1,80 @@
+#!/bin/sh
+# Paseo provider command for Claude Code: holds an agent's session until its workspace setup has
+# finished, isolates it from the user scope when the project opts in, then execs the real `claude`.
+# See ../README.md.
+set -eu
+
+self_dir=$(cd "$(dirname "$0")" && pwd -P)
+name=$(basename "$0")
+
+# The first executable `$1` on PATH, then in the usual install locations, skipping this directory.
+find_executable() {
+    old_ifs=$IFS
+    IFS=:
+    for dir in $PATH "$HOME/.local/bin" "$HOME/.claude/local" "$HOME/.bun/bin" /opt/homebrew/bin /usr/local/bin; do
+        [ -n "$dir" ] && [ -x "$dir/$1" ] || continue
+        [ "$(cd "$dir" && pwd -P)" = "$self_dir" ] && continue
+        IFS=$old_ifs
+        printf '%s\n' "$dir/$1"
+        return 0
+    done
+    IFS=$old_ifs
+    return 1
+}
+
+real=$(find_executable "$name") || {
+    echo "[claude-launcher] cannot find the real '$name' outside $self_dir" >&2
+    exit 127
+}
+
+# Only an agent session waits: Paseo also runs `claude --version` and `claude auth status` with
+# short timeouts, and those must pass straight through. Sessions are the SDK's stream-json mode.
+is_session=false
+for arg in "$@"; do
+    [ "$arg" = "--input-format" ] && is_session=true && break
+done
+
+if [ "$is_session" = true ] && [ -n "${PASEO_AGENT_ID:-}" ]; then
+    if bun=$(find_executable bun); then
+        # From this package, so bun never reads the agent's project `bunfig.toml` (preloads, etc.).
+        (cd "$self_dir/.." && "$bun" src/main.ts) || true
+    else
+        echo "[claude-launcher] bun not found, starting without waiting for setup" >&2
+    fi
+fi
+
+# Whether the project at the session's cwd opted out of the user scope: `.claude/isolated` in the cwd
+# or a parent, up to the repository root.
+is_isolated() {
+    dir=$PWD
+    while :; do
+        [ -e "$dir/.claude/isolated" ] && return 0
+        [ -e "$dir/.git" ] || [ "$dir" = / ] && return 1
+        dir=$(dirname "$dir")
+    done
+}
+
+# Isolation reads only project and local settings, so no user plugins, MCP servers, `CLAUDE.md` or
+# settings, and turns off claude.ai connectors and synced skills. Paseo's own
+# `--setting-sources=user,project,local` is replaced rather than repeated.
+if [ "$is_session" = true ] && is_isolated; then
+    skip=false
+    first=true
+    for arg in "$@"; do
+        [ "$first" = true ] && set -- && first=false
+        if [ "$skip" = true ]; then
+            skip=false
+            continue
+        fi
+        case $arg in
+            --setting-sources) skip=true && continue ;;
+            --setting-sources=*) continue ;;
+        esac
+        set -- "$@" "$arg"
+    done
+    set -- "$@" --setting-sources=project,local
+    export ENABLE_CLAUDEAI_MCP_SERVERS=false
+    echo "[claude-launcher] isolated from the user scope by .claude/isolated" >&2
+fi
+
+exec "$real" "$@"

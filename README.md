@@ -16,8 +16,9 @@ independently.
 
 ## Tools
 
-- [wait-for-setup](packages/wait-for-setup/README.md) — hold a Claude agent until its workspace
-  setup has finished. A provider command wrapper, not a daemon plugin.
+- [claude-launcher](packages/claude-launcher/README.md) — Paseo's command for Claude Code: holds an
+  agent until its workspace setup has finished, and isolates projects that opt out of the user scope.
+  A provider command wrapper, not a daemon plugin.
 
 ## Requirements
 
