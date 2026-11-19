@@ -1,0 +1,7 @@
+{
+    "id": "claude-trust",
+    "description": "Trust every Paseo worktree in Claude Code, so it never asks",
+    "requirements": {
+        "paseo": ">=0.15.0"
+    }
+}

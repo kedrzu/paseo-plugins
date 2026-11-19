@@ -21,6 +21,10 @@ checkout or a path in this GitHub repository.
   Code logins: the Keychain item, `oauthAccount` in `~/.claude.json`, the account store and the
   sidebar and Command Center UI.
 
+- `@paseo-plugins/claude-trust` (`packages/claude-trust`) owns trusting Paseo worktrees in Claude
+  Code: the `projects[<path>].hasTrustDialogAccepted` entries in `~/.claude.json`, written for each new
+  worktree and, on load, for every existing one.
+
 - `@paseo-plugins/open-workspace` (`packages/open-workspace`) owns opening a workspace outside
   Paseo: in Finder, Fork and VS Code on the daemon host, its pull request or branch on GitHub, whose URL the
   daemon host resolves with `git` and `gh` and the client opens, and its `.pen` design files in the
