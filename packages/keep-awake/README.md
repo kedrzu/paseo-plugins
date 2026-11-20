@@ -2,8 +2,8 @@
 
 Keep the Mac running the Paseo daemon awake for a while, from any device, including the phone.
 
-- **Sidebar footer:** a row with the session's end time and what is left. Its popover adds 30 min,
-  1 h, 2 h or 4 h, or stops the session.
+- **Sidebar footer:** a button showing what is left, in a row shared with the other plugins of this
+  repo. Its popover adds 30 min, 1 h, 2 h or 4 h, or stops the session.
 - **Command Center:** the same as global items, `Keep Mac awake +1 h` and `Let Mac sleep`.
 
 Each extension adds to the running session, or starts one from now.

@@ -9,10 +9,14 @@ export function formatKeepAwake(endsAt: number | null, now: number): string {
     }
     const end = new Date(endsAt);
     const time = `${end.getHours()}:${String(end.getMinutes()).padStart(2, '0')}`;
-    return `Awake until ${time} (${formatDuration(endsAt - now)})`;
+    return `Awake until ${time} (${formatKeepAwakeDuration(endsAt - now)})`;
 }
 
-function formatDuration(milliseconds: number): string {
+/**
+ * The time left, rounded up to the minute: "1 h 20 min".
+ * @__NO_SIDE_EFFECTS__
+ */
+export function formatKeepAwakeDuration(milliseconds: number): string {
     const minutes = Math.ceil(milliseconds / 60_000);
     const hours = Math.floor(minutes / 60);
     const rest = minutes % 60;
