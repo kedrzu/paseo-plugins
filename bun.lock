@@ -912,6 +912,10 @@
       "name": "@paseo-plugins/claude-trust",
       "version": "0.0.0",
     },
+    "packages/keep-awake": {
+      "name": "@paseo-plugins/keep-awake",
+      "version": "0.0.0",
+    },
     "packages/open-workspace": {
       "name": "@paseo-plugins/open-workspace",
       "version": "0.0.0",
@@ -1881,6 +1885,8 @@
     "@paseo-plugins/claude-launcher": ["@paseo-plugins/claude-launcher@workspace:packages/claude-launcher"],
 
     "@paseo-plugins/claude-trust": ["@paseo-plugins/claude-trust@workspace:packages/claude-trust"],
+
+    "@paseo-plugins/keep-awake": ["@paseo-plugins/keep-awake@workspace:packages/keep-awake"],
 
     "@paseo-plugins/open-workspace": ["@paseo-plugins/open-workspace@workspace:packages/open-workspace"],
 
