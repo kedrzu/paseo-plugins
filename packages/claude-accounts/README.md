@@ -2,8 +2,8 @@
 
 Switch between saved Claude Code logins from Paseo.
 
-- **Sidebar footer row** with a menu: the current account, the saved accounts, and "Save current
-  account".
+- **Sidebar footer button**, in a row shared with the other plugins of this repo, with a menu: the
+  current account, the saved accounts, and "Save current account".
 - **Command Center items:** "Save current Claude account" and "Switch Claude account: <email>" for
   each saved account.
 

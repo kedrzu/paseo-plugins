@@ -1,9 +1,10 @@
 import type { PluginPopoverProps, PluginSidebarItemProps } from '@getpaseo/plugin/client';
-import { Icon, SidebarRow } from '@getpaseo/plugin/client/ui';
+import { Icon } from '@getpaseo/plugin/client/ui';
 import type { ComponentType } from 'react';
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { useFooterTray } from './footerTray/useFooterTray';
 import type { AccountsStatus, AccountsStore } from './store';
 import { getSidebarLabel } from './store';
 import { ActionButton, SwitchConfirm, useAccountActions } from './switchConfirm';
@@ -15,28 +16,30 @@ interface AccountRowProps extends Pick<PluginPopoverProps, 'theme'> {
     onPress: () => void;
 }
 
-/** The footer row and its popover; created per store, which the host's props cannot carry. */
+/**
+ * The footer button, in the row shared with other plugins, and its popover; created per store, which
+ * the host's props cannot carry.
+ */
 export function createAccountsSidebarItem(store: AccountsStore): ComponentType<PluginSidebarItemProps> {
     return AccountsSidebarItem;
 
     function AccountsSidebarItem(props: PluginSidebarItemProps) {
         const { status } = useSyncExternalStore(store.subscribe, store.getSnapshot);
-        return (
-            <SidebarRow
-                icon="User"
-                label={getSidebarLabel(status)}
-                onPress={() => {
-                    props.openPopover(AccountsPopover);
-                    void store.refresh();
-                }}
-            />
-        );
+        return useFooterTray(props, {
+            icon: 'User',
+            label: getSidebarLabel(status) ?? 'Claude accounts',
+            Popover: AccountsPopover,
+        });
     }
 
     function AccountsPopover({ theme }: PluginPopoverProps) {
         const { status, loadError } = useSyncExternalStore(store.subscribe, store.getSnapshot);
         const { actions, state } = useAccountActions(store);
         const pending = state.step === 'pending';
+
+        useEffect(() => {
+            void store.refresh();
+        }, []);
 
         // The host pads the popover already.
         return <View style={{ gap: 4, minWidth: 260 }}>{renderContent()}</View>;

@@ -1,12 +1,12 @@
 import type { PluginTheme } from '@getpaseo/plugin';
 import type { PluginPopoverProps, PluginSidebarItemProps } from '@getpaseo/plugin/client';
-import { SidebarRow } from '@getpaseo/plugin/client/ui';
 import type { ComponentType } from 'react';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { EXTEND_OPTIONS } from './commands';
-import { formatKeepAwake } from './formatKeepAwake';
+import { useFooterTray } from './footerTray/useFooterTray';
+import { formatKeepAwake, formatKeepAwakeDuration } from './formatKeepAwake';
 import type { KeepAwakeStore } from './store';
 
 interface ActionButtonProps {
@@ -19,7 +19,10 @@ interface ActionButtonProps {
 /** The label ticks this often, so the remaining time stays current without asking the daemon. */
 const TICK_MS = 30_000;
 
-/** The footer row and its popover; created per store, which the host's props cannot carry. */
+/**
+ * The footer button, in the row shared with other plugins, and its popover; created per store, which
+ * the host's props cannot carry.
+ */
 export function createKeepAwakeSidebarItem(store: KeepAwakeStore): ComponentType<PluginSidebarItemProps> {
     return KeepAwakeSidebarItem;
 
@@ -27,16 +30,12 @@ export function createKeepAwakeSidebarItem(store: KeepAwakeStore): ComponentType
         const { endsAt } = useSyncExternalStore(store.subscribe, store.getSnapshot);
         const now = useNow();
         const active = endsAt != null && endsAt > now;
-        return (
-            <SidebarRow
-                icon={active ? 'Coffee' : 'Moon'}
-                label={endsAt === undefined ? 'Keep awake' : formatKeepAwake(endsAt, now)}
-                onPress={() => {
-                    props.openPopover(KeepAwakePopover);
-                    void store.refresh();
-                }}
-            />
-        );
+        return useFooterTray(props, {
+            icon: active ? 'Coffee' : 'Moon',
+            label: endsAt === undefined ? 'Keep awake' : formatKeepAwake(endsAt, now),
+            text: active ? formatKeepAwakeDuration(endsAt - now) : undefined,
+            Popover: KeepAwakePopover,
+        });
     }
 
     function KeepAwakePopover({ theme }: PluginPopoverProps) {
@@ -46,6 +45,10 @@ export function createKeepAwakeSidebarItem(store: KeepAwakeStore): ComponentType
         const [actionError, setActionError] = useState<string | null>(null);
         const active = endsAt != null && endsAt > now;
         const error = actionError ?? loadError;
+
+        useEffect(() => {
+            void store.refresh();
+        }, []);
 
         // The host pads the popover already.
         return (
