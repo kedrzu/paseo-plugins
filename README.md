@@ -11,6 +11,7 @@ independently.
 - [claude-accounts](packages/claude-accounts/README.md) — switch between saved Claude Code logins.
 - [claude-trust](packages/claude-trust/README.md) — trust every Paseo worktree in Claude Code, so it
   never asks.
+- [keep-awake](packages/keep-awake/README.md) — keep the Mac awake for a while, from the phone too.
 - [open-workspace](packages/open-workspace/README.md) — open the workspace in Finder, Fork, VS Code, on
   GitHub (its pull request or branch) or its `.pen` designs in Pen from the Command Center.
 

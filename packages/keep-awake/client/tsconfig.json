@@ -1,0 +1,7 @@
+{
+    "extends": "../tsconfig.esm.json",
+    "compilerOptions": {
+        "types": ["react", "bun"]
+    },
+    "include": [".", "../index.client.tsx", "../shared"]
+}

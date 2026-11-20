@@ -1,0 +1,7 @@
+{
+    "id": "keep-awake",
+    "description": "Keep the Mac awake for a while, from any device, with caffeinate",
+    "requirements": {
+        "paseo": ">=0.15.0"
+    }
+}
