@@ -1,0 +1,18 @@
+[project]
+name = "local-speech"
+version = "0.0.0"
+description = "Local OpenAI-compatible speech server for Paseo: Whisper large-v3 (MLX) and Supertonic 3."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi",
+    "mlx-whisper",
+    "num2words",
+    "python-multipart",
+    "scipy",
+    "soundfile",
+    "supertonic",
+    "uvicorn",
+]
+
+[tool.uv]
+package = false
