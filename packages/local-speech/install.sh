@@ -19,6 +19,12 @@ fi
 
 "$UV" sync --project "$DIR" --frozen --quiet
 
+# Server settings (README.md, "Settings") come from LOCAL_SPEECH_* variables in this shell.
+ENV_ENTRIES=""
+for name in ${(k)parameters[(I)LOCAL_SPEECH_*]}; do
+    ENV_ENTRIES+="        <key>$name</key><string>${(P)name}</string>"$'\n'
+done
+
 cat > "$PLIST" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -30,6 +36,9 @@ cat > "$PLIST" <<PLIST
         <string>$UV</string><string>run</string><string>--project</string><string>$DIR</string>
         <string>--frozen</string><string>python</string><string>$DIR/server.py</string>
     </array>
+    <key>EnvironmentVariables</key>
+    <dict>
+$ENV_ENTRIES    </dict>
     <key>WorkingDirectory</key><string>$DIR</string>
     <key>RunAtLoad</key><true/>
     <key>KeepAlive</key><true/>

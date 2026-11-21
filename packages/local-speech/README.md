@@ -50,7 +50,7 @@ Then point Paseo at it in `~/.paseo/config.json` and run `paseo daemon reload`:
 ## Settings
 
 Pick the voice with `voice` in Paseo's config. The rest are environment variables of the server
-(add them to the plist's `EnvironmentVariables` to persist):
+(set them when running `install.sh`, e.g. `LOCAL_SPEECH_TTS_SPEED=1.5 install.sh`, which writes them into the plist):
 
 - `LOCAL_SPEECH_PORT` (`4011`), `LOCAL_SPEECH_HOST` (`127.0.0.1`);
 - `LOCAL_SPEECH_WHISPER_REPO`: any MLX Whisper repo, e.g. `mlx-community/whisper-large-v3-turbo` for
