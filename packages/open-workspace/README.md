@@ -1,7 +1,7 @@
 # open-workspace
 
 Open the workspace outside Paseo from the Command Center: its repository in Finder, Fork, VS Code,
-Zed or on GitHub, and its `.pen` designs in [Pen](https://pen.dev).
+Zed or on GitHub, its Linear issue, and its `.pen` designs in [Pen](https://pen.dev).
 
 - **"Open in Finder"**: shows the workspace directory in Finder.
 - **"Open in Fork"**: opens the repository in the [Fork](https://git-fork.com) git client.
@@ -10,6 +10,8 @@ Zed or on GitHub, and its `.pen` designs in [Pen](https://pen.dev).
 - **"Open on GitHub"**: opens the branch's open pull request; without one, the code on the branch.
 - **"Review Code"**: opens the "Files changed" tab of the branch's open pull request (`<pr>/files`);
   without an open pull request, or without a logged-in `gh`, it reports so.
+- **"Open in Linear"**: opens the workspace's [Linear](https://linear.app) issue in the browser
+  (see "Which Linear issue").
 - **"Open Design in Pen"**: with one design in the workspace it opens that file; with several it
   opens a picker listing them by path relative to the workspace; with none it reports so. The
   picker is driven from the keyboard: typing filters, ↑/↓ select, Enter opens, Escape goes back.
@@ -35,6 +37,16 @@ The daemon host works out the URL; the device you picked the command on opens it
    and upstream branch name (`origin` and the local name when it has no upstream). A branch the
    remote does not have yet is an error that asks you to push it.
 3. **Detached HEAD:** the commit, on `origin`.
+
+## Which Linear issue
+
+1. **Branch:** an issue ID heading the last segment of the checked-out branch, such as
+   `feature/lin-123-short-title` or `lin-123`.
+2. **Workspace name:** a title or name starting with `[LIN-123]`.
+
+Any team key works, not only `LIN`. The URL is `https://linear.app/<workspace>/issue/<ID>`; Linear
+has no issue URL without the organisation slug, so set **Workspace** once in the plugin's settings
+(Settings → Open Workspace). Without it, or without an issue ID, the command says what is missing.
 
 ## Which design files count
 

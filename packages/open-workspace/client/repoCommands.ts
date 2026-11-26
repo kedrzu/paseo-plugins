@@ -1,6 +1,7 @@
 import type { PluginCommandCenterItemContribution } from '@getpaseo/plugin/client';
 import { openExternalUrl } from '@getpaseo/plugin/client';
 
+import { linearIssueUrlRpc } from '../shared/linear';
 import {
     repoGithubUrlRpc,
     repoOpenInFinderRpc,
@@ -75,6 +76,19 @@ export const RepoCommands: PluginCommandCenterItemContribution[] = [
         context: 'workspace',
         async onSelect(context) {
             const { url } = await context.rpc(repoReviewUrlRpc, { directory: context.workspace.directory });
+            await openExternalUrl(url);
+        },
+    },
+    {
+        id: 'open-in-linear',
+        title: 'Open in Linear',
+        icon: 'SquareKanban',
+        keywords: ['linear', 'issue', 'task', 'ticket', 'browser'],
+        context: 'workspace',
+        async onSelect(context) {
+            const { workspace } = context;
+            const names = [workspace.title, workspace.name].filter(name => name !== null);
+            const { url } = await context.rpc(linearIssueUrlRpc, { directory: workspace.directory, names });
             await openExternalUrl(url);
         },
     },

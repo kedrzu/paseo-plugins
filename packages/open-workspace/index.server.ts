@@ -2,8 +2,10 @@ import type { PluginServerContext } from '@getpaseo/plugin/server';
 import { execCommand } from '@getpaseo/plugin/server';
 
 import { createDesigns } from './server/designs';
+import { createLinear } from './server/linear';
 import { createRepo } from './server/repo';
 import { designsListRpc, designsOpenRpc } from './shared/designs';
+import { linearIssueUrlRpc, linearSettings } from './shared/linear';
 import {
     repoGithubUrlRpc,
     repoOpenInFinderRpc,
@@ -20,6 +22,17 @@ import {
 export default function contribute(server: PluginServerContext): () => void {
     const repo = createRepo({ exec: execCommand, platform: process.platform });
     const designs = createDesigns({ exec: execCommand, platform: process.platform });
+    const settings = server.registerSettings(linearSettings);
+    const linear = createLinear({
+        exec: execCommand,
+        async readWorkspace() {
+            const state = await settings.read();
+            if (state.status === 'invalid') {
+                throw new Error(`The Open Workspace settings are invalid: ${state.error}`);
+            }
+            return state.values.workspace;
+        },
+    });
 
     server.handle(repoOpenInFinderRpc, async ({ directory }) => {
         await repo.openInFinder(directory);
@@ -39,6 +52,8 @@ export default function contribute(server: PluginServerContext): () => void {
     });
     server.handle(repoGithubUrlRpc, async ({ directory }) => ({ url: await repo.githubUrl(directory) }));
     server.handle(repoReviewUrlRpc, async ({ directory }) => ({ url: await repo.reviewUrl(directory) }));
+
+    server.handle(linearIssueUrlRpc, async input => ({ url: await linear.issueUrl(input) }));
 
     server.handle(designsListRpc, async ({ directory }) => ({ files: await designs.list(directory) }));
     server.handle(designsOpenRpc, async ({ directory, path }) => {
