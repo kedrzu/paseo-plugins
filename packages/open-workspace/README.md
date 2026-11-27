@@ -7,9 +7,10 @@ Zed or on GitHub, its Linear issue, and its `.pen` designs in [Pen](https://pen.
 - **"Open in Fork"**: opens the repository in the [Fork](https://git-fork.com) git client.
 - **"Open in VS Code"**: opens the workspace directory in [VS Code](https://code.visualstudio.com).
 - **"Open in Zed"**: opens the workspace directory in [Zed](https://zed.dev).
-- **"Open on GitHub"**: opens the branch's open pull request; without one, the code on the branch.
-- **"Review Code"**: opens the "Files changed" tab of the branch's open pull request (`<pr>/files`);
-  without an open pull request, or without a logged-in `gh`, it reports so.
+- **"Open on GitHub"**: opens the branch's open or merged pull request; without one, the code on the
+  branch.
+- **"Review Code"**: opens the "Files changed" tab of the branch's open or merged pull request
+  (`<pr>/files`); without one, or without a logged-in `gh`, it reports so.
 - **"Open in Linear"**: opens the workspace's [Linear](https://linear.app) issue in the browser
   (see "Which Linear issue").
 - **"Open Design in Pen"**: with one design in the workspace it opens that file; with several it
@@ -31,8 +32,9 @@ plugins; uninstall those first.
 
 The daemon host works out the URL; the device you picked the command on opens it in its browser.
 
-1. **Open pull request:** `gh pr view` for the checked-out branch, when its state is `OPEN`. A merged
-   or closed pull request, a missing `gh` or a logged-out `gh` falls through to the next step.
+1. **Pull request:** `gh pr view` for the checked-out branch, when its state is `OPEN` or `MERGED`
+   (GitHub usually deletes a merged branch, so its tree page would be a 404). A closed pull request,
+   a missing `gh` or a logged-out `gh` falls through to the next step.
 2. **Branch:** `https://github.com/<owner>/<repo>/tree/<branch>`, using the branch's upstream remote
    and upstream branch name (`origin` and the local name when it has no upstream). A branch the
    remote does not have yet is an error that asks you to push it.

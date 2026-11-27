@@ -52,14 +52,21 @@ test('an open pull request wins over the branch', async () => {
     expect(await repo.githubUrl(directory)).toBe('https://github.com/acme/app/pull/7');
 });
 
-test('a merged pull request falls back to the code on the upstream branch', async () => {
+test('a merged pull request wins over the branch', async () => {
+    const directory = await createRepository({ branch: 'feat/x', remoteUrl: 'git@github.com:acme/app.git' });
+    const repo = createTestRepo({ url: 'https://github.com/acme/app/pull/7', state: 'MERGED' });
+
+    expect(await repo.githubUrl(directory)).toBe('https://github.com/acme/app/pull/7');
+});
+
+test('a closed pull request falls back to the code on the upstream branch', async () => {
     const directory = await createRepository({
         branch: 'feat/x',
         remoteUrl: 'https://github.com/acme/app.git',
         remote: 'upstream',
         upstreamBranch: 'feat/#1-x',
     });
-    const repo = createTestRepo({ url: 'https://github.com/acme/app/pull/7', state: 'MERGED' });
+    const repo = createTestRepo({ url: 'https://github.com/acme/app/pull/7', state: 'CLOSED' });
 
     expect(await repo.githubUrl(directory)).toBe('https://github.com/acme/app/tree/feat/%231-x');
 });
@@ -103,20 +110,22 @@ test('a directory outside git is an error', async () => {
     await expect(repo.githubUrl(directory)).rejects.toThrow('not a git repository');
 });
 
-test('review opens the files tab of the open pull request', async () => {
+test('review opens the files tab of the open or merged pull request', async () => {
     const directory = await createRepository({ branch: 'feat/x', remoteUrl: 'git@github.com:acme/app.git' });
-    const repo = createTestRepo({ url: 'https://github.com/acme/app/pull/7', state: 'OPEN' });
 
-    expect(await repo.reviewUrl(directory)).toBe('https://github.com/acme/app/pull/7/files');
+    for (const state of ['OPEN', 'MERGED']) {
+        const repo = createTestRepo({ url: 'https://github.com/acme/app/pull/7', state });
+        expect(await repo.reviewUrl(directory)).toBe('https://github.com/acme/app/pull/7/files');
+    }
 });
 
-test('review without an open pull request is an error', async () => {
+test('review without an open or merged pull request is an error', async () => {
     const directory = await createRepository({ branch: 'feat/x', remoteUrl: 'git@github.com:acme/app.git' });
 
     await expect(
-        createTestRepo({ url: 'https://github.com/acme/app/pull/7', state: 'MERGED' }).reviewUrl(directory),
-    ).rejects.toThrow('no open pull request');
-    await expect(createTestRepo('fail').reviewUrl(directory)).rejects.toThrow('no open pull request');
+        createTestRepo({ url: 'https://github.com/acme/app/pull/7', state: 'CLOSED' }).reviewUrl(directory),
+    ).rejects.toThrow('no open or merged pull request');
+    await expect(createTestRepo('fail').reviewUrl(directory)).rejects.toThrow('no open or merged pull request');
 });
 
 test('opens the directory in Finder, Fork, VS Code and Zed', async () => {

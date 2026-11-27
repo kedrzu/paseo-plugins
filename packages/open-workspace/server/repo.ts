@@ -28,9 +28,9 @@ export interface Repo {
     openInFork: (directory: string) => Promise<void>;
     openInVscode: (directory: string) => Promise<void>;
     openInZed: (directory: string) => Promise<void>;
-    /** The open pull request for the checked-out branch, else the branch's code on GitHub. */
+    /** The open or merged pull request for the checked-out branch, else the branch's code on GitHub. */
     githubUrl: (directory: string) => Promise<string>;
-    /** The "Files changed" tab of the open pull request for the checked-out branch. */
+    /** The "Files changed" tab of the open or merged pull request for the checked-out branch. */
     reviewUrl: (directory: string) => Promise<string>;
 }
 
@@ -58,14 +58,14 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
 
     async function githubUrl(directory: string): Promise<string> {
         await assertGitRepository(directory);
-        return (await findOpenPullRequestUrl(directory)) ?? (await findBranchUrl(directory));
+        return (await findPullRequestUrl(directory)) ?? (await findBranchUrl(directory));
     }
 
     async function reviewUrl(directory: string): Promise<string> {
         await assertGitRepository(directory);
-        const pullRequestUrl = await findOpenPullRequestUrl(directory);
+        const pullRequestUrl = await findPullRequestUrl(directory);
         if (pullRequestUrl === null) {
-            throw new Error('This branch has no open pull request, or gh is missing or not logged in.');
+            throw new Error('This branch has no open or merged pull request, or gh is missing or not logged in.');
         }
         return `${pullRequestUrl.replace(/\/$/, '')}/files`;
     }
@@ -98,8 +98,12 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
         }
     }
 
-    /** Null when there is none, or when `gh` is missing or not logged in: the branch page still works. */
-    async function findOpenPullRequestUrl(directory: string): Promise<string | null> {
+    /**
+     * The branch's open or merged pull request. Null for a closed one, when there is none, or when `gh`
+     * is missing or not logged in: the branch page still works. A merged pull request wins over the
+     * branch because GitHub usually deletes the branch on merge.
+     */
+    async function findPullRequestUrl(directory: string): Promise<string | null> {
         let stdout: string;
         try {
             ({ stdout } = await exec('gh', ['pr', 'view', '--json', 'url,state'], { cwd: directory }));
@@ -113,8 +117,16 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
             return null;
         }
         const pullRequest = pullRequestSchema.safeParse(json);
-        // `gh pr view` also finds the branch's merged or closed pull request.
-        return pullRequest.success && pullRequest.data.state === 'OPEN' ? pullRequest.data.url : null;
+        if (!pullRequest.success) {
+            return null;
+        }
+        switch (pullRequest.data.state) {
+            case 'OPEN':
+            case 'MERGED':
+                return pullRequest.data.url;
+            default:
+                return null;
+        }
     }
 
     async function findBranchUrl(directory: string): Promise<string> {
