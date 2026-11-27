@@ -20,6 +20,8 @@ independently.
 - [claude-launcher](packages/claude-launcher/README.md) — Paseo's command for Claude Code: holds an
   agent until its workspace setup has finished, and isolates every session from the user scope.
   A provider command wrapper, not a daemon plugin.
+- [local-speech](packages/local-speech/README.md) — free, local Polish dictation and voice mode: Whisper
+  large-v3 and Supertonic 3 behind an OpenAI-compatible server Paseo's `openai` speech provider points at.
 
 ## Requirements
 

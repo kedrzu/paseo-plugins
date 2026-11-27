@@ -39,6 +39,11 @@ checkout or a path in this GitHub repository.
   hooks time out after 30 seconds and get no setup-finished event. It talks to the daemon through
   `@getpaseo/client`, the one runtime dependency in the repo, and runs on Bun from its own directory.
 
+- `@paseo-plugins/local-speech` (`packages/local-speech`) owns local speech for dictation and voice
+  mode: a Python server (uv, launchd agent) with OpenAI's `/v1/audio/transcriptions` and
+  `/v1/audio/speech`. Not a plugin: Paseo's local speech catalog has no Polish TTS and no Whisper
+  large-v3, while its `openai` provider takes any `baseUrl`. The repo's only Python; Bun and Nx ignore it.
+
 Each new plugin is a package `@paseo-plugins/<name>` in `packages/<name>`.
 
 Every plugin follows Paseo's layout rules (`README.md`): only its entries, `paseo-plugin.json` and

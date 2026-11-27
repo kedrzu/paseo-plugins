@@ -916,6 +916,10 @@
       "name": "@paseo-plugins/keep-awake",
       "version": "0.0.0",
     },
+    "packages/local-speech": {
+      "name": "@paseo-plugins/local-speech",
+      "version": "0.0.0",
+    },
     "packages/open-workspace": {
       "name": "@paseo-plugins/open-workspace",
       "version": "0.0.0",
@@ -1887,6 +1891,8 @@
     "@paseo-plugins/claude-trust": ["@paseo-plugins/claude-trust@workspace:packages/claude-trust"],
 
     "@paseo-plugins/keep-awake": ["@paseo-plugins/keep-awake@workspace:packages/keep-awake"],
+
+    "@paseo-plugins/local-speech": ["@paseo-plugins/local-speech@workspace:packages/local-speech"],
 
     "@paseo-plugins/open-workspace": ["@paseo-plugins/open-workspace@workspace:packages/open-workspace"],
 
