@@ -16,7 +16,7 @@ const DEFAULT_REMOTE = 'origin';
 /** `git@github.com:o/r.git`, `ssh://git@github.com/o/r.git`, `https://[user@]github.com/o/r[.git]`. */
 const GITHUB_REMOTE = /^(?:(?:https?|ssh):\/\/)?(?:[^@/]+@)?github\.com[:/]([^/]+)\/([^/]+?)(?:\.git)?\/?$/;
 
-const pullRequestSchema = z.object({ url: z.string(), state: z.string() });
+const pullRequestSchema = z.object({ url: z.string() });
 
 export interface CreateRepoParams {
     exec: typeof execCommand;
@@ -28,9 +28,9 @@ export interface Repo {
     openInFork: (directory: string) => Promise<void>;
     openInVscode: (directory: string) => Promise<void>;
     openInZed: (directory: string) => Promise<void>;
-    /** The open pull request for the checked-out branch, else the branch's code on GitHub. */
+    /** The pull request for the checked-out branch, whatever its state, else the branch's code on GitHub. */
     githubUrl: (directory: string) => Promise<string>;
-    /** The "Files changed" tab of the open pull request for the checked-out branch. */
+    /** The "Files changed" tab of the checked-out branch's pull request, else the branch's code on GitHub. */
     reviewUrl: (directory: string) => Promise<string>;
 }
 
@@ -58,14 +58,14 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
 
     async function githubUrl(directory: string): Promise<string> {
         await assertGitRepository(directory);
-        return (await findOpenPullRequestUrl(directory)) ?? (await findBranchUrl(directory));
+        return (await findPullRequestUrl(directory)) ?? (await findBranchUrl(directory));
     }
 
     async function reviewUrl(directory: string): Promise<string> {
         await assertGitRepository(directory);
-        const pullRequestUrl = await findOpenPullRequestUrl(directory);
+        const pullRequestUrl = await findPullRequestUrl(directory);
         if (pullRequestUrl === null) {
-            throw new Error('This branch has no open pull request, or gh is missing or not logged in.');
+            return await findBranchUrl(directory);
         }
         return `${pullRequestUrl.replace(/\/$/, '')}/files`;
     }
@@ -98,11 +98,15 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
         }
     }
 
-    /** Null when there is none, or when `gh` is missing or not logged in: the branch page still works. */
-    async function findOpenPullRequestUrl(directory: string): Promise<string | null> {
+    /**
+     * The branch's pull request in any state (`gh pr view` also finds merged and closed ones): GitHub
+     * often deletes the branch once its pull request is done. Null when there is none, or when `gh` is
+     * missing or not logged in: the branch page still works.
+     */
+    async function findPullRequestUrl(directory: string): Promise<string | null> {
         let stdout: string;
         try {
-            ({ stdout } = await exec('gh', ['pr', 'view', '--json', 'url,state'], { cwd: directory }));
+            ({ stdout } = await exec('gh', ['pr', 'view', '--json', 'url'], { cwd: directory }));
         } catch {
             return null;
         }
@@ -113,8 +117,7 @@ export function createRepo({ exec, platform }: CreateRepoParams): Repo {
             return null;
         }
         const pullRequest = pullRequestSchema.safeParse(json);
-        // `gh pr view` also finds the branch's merged or closed pull request.
-        return pullRequest.success && pullRequest.data.state === 'OPEN' ? pullRequest.data.url : null;
+        return pullRequest.success ? pullRequest.data.url : null;
     }
 
     async function findBranchUrl(directory: string): Promise<string> {
